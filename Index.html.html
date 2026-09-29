@@ -1,0 +1,477 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cognita Guild · House of Quanta · Game House</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fbf8ef">
+<meta name="description" content="Weekly Sudoku and Chess challenges for the House of Quanta.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cognita Guild">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+:root{--bg:#fbf8ef;--card:#fff;--ink:#14213d;--mute:#6b7280;--gold:#d4a017;--goldd:#8a6600;--line:#e5dfcc;--bad:#c0392b;--badbg:#fbe3df;--sel:#fff1bf;--peer:#f6efd6;--same:#ffe08a;--fixed:#14213d;--user:#1e5fbf;--btn:#14213d;--btnt:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+header{background:linear-gradient(135deg,#14213d,#233a6b);color:#fff;border-radius:16px;padding:20px;border-bottom:5px solid var(--gold)}
+header small{letter-spacing:.12em;text-transform:uppercase;color:#f0c94a;font-size:11px}
+header h1{margin:4px 0 2px;font-size:24px}header p{margin:0;opacity:.85;font-size:14px}
+.tabs{display:flex;gap:6px;margin:14px 0}.tabs button{flex:1;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font-weight:600;font-size:15px}
+.tabs button.on{background:var(--btn);color:var(--btnt);border-color:var(--btn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.card h2,.card h3{margin:0 0 6px;font-size:17px}.card p{margin:6px 0}.mute{color:var(--mute);font-size:13px}
+.btn{display:inline-block;background:var(--btn);color:var(--btnt);border:0;border-radius:10px;padding:11px 16px;font-weight:700;font-size:15px;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn[disabled]{opacity:.45}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--peer);color:var(--goldd);margin-right:4px}
+.wk{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.wk .n{font-size:12px;color:var(--goldd);font-weight:800;letter-spacing:.08em}
+.lock{opacity:.9}.done{border-color:#2e9e5b}
+ol.steps{padding-left:20px;margin:6px 0}ol.steps li{margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700}
+#grid{display:grid;grid-template-columns:repeat(9,1fr);width:100%;aspect-ratio:1;border:2.5px solid var(--ink);border-radius:6px;overflow:hidden;background:var(--card);touch-action:manipulation}
+.c{position:relative;display:flex;align-items:center;justify-content:center;font-size:clamp(17px,5.6vw,28px);border:.5px solid var(--line);cursor:pointer;user-select:none}
+.c:nth-child(3n){border-right:2px solid var(--ink)}.c:nth-child(9n){border-right:0}
+.c.r2,.c.r5{border-bottom:2px solid var(--ink)}
+.c.p{background:var(--peer)}.c.s2{background:var(--same)}.c.s{background:var(--sel)}
+.c.f{color:var(--fixed);font-weight:800}.c.u{color:var(--user)}.c.w{color:var(--bad);background:var(--badbg)}
+.nt{display:grid;grid-template-columns:repeat(3,1fr);width:100%;height:100%;font-size:clamp(7px,2.2vw,11px);color:var(--mute);line-height:1;padding:1px}
+.nt span{display:flex;align-items:center;justify-content:center}
+#pad{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin-top:12px}
+#pad button{padding:10px 0;font-size:20px;font-weight:700;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+#pad button.gone{opacity:.25}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.tools button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:14px}.tools button.on{background:var(--gold);color:#14213d}
+#win{position:fixed;inset:0;background:rgba(10,15,30,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}
+#win .box{background:var(--card);border-radius:18px;padding:24px;max-width:380px;width:100%;text-align:center;border-top:6px solid var(--gold)}
+.hide{display:none}
+.gh{display:flex;gap:8px;margin:10px 0 0}.gh a{flex:1;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:700;font-size:14px}.gh a.on{background:var(--gold);color:#14213d;border-color:var(--gold)}
+#mg{display:grid;gap:0;margin:0 auto;border:2.5px solid var(--ink);border-radius:6px;overflow:hidden}
+#mg .m{display:flex;align-items:center;justify-content:center;aspect-ratio:1;font-size:26px;border:.5px solid var(--line);cursor:pointer;user-select:none;background:var(--card)}
+#mg .m.f{font-weight:800;color:var(--fixed)}#mg .m.u{color:var(--user)}#mg .m.s{background:var(--sel)}#mg .m.w{background:var(--badbg);color:var(--bad)}
+#mpad{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:12px}#mpad button{width:44px;padding:10px 0;font-size:20px;font-weight:700;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+
+
+:root{--bg:#fbf8ef;--card:#fff;--ink:#14213d;--mute:#6b7280;--gold:#d4a017;--goldd:#8a6600;--line:#e5dfcc;--btn:#14213d;--btnt:#fff;--lt:#f3e2b3;--dk:#b8893a;--hl:rgba(80,160,60,.55);--last:rgba(255,215,0,.5);--chk:rgba(220,50,40,.7);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+header{background:linear-gradient(135deg,#14213d,#233a6b);color:#fff;border-radius:16px;padding:20px;border-bottom:5px solid var(--gold)}
+header small{letter-spacing:.12em;text-transform:uppercase;color:#f0c94a;font-size:11px}header h1{margin:4px 0 2px;font-size:24px}header p{margin:0;opacity:.85;font-size:14px}
+.tabs{display:flex;gap:6px;margin:14px 0}.tabs button{flex:1;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font-weight:600;font-size:15px}.tabs button.on{background:var(--btn);color:var(--btnt);border-color:var(--btn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}.card h2,.card h3{margin:0 0 6px;font-size:17px}.card p{margin:6px 0}.mute{color:var(--mute);font-size:13px}
+.btn{display:inline-block;background:var(--btn);color:var(--btnt);border:0;border-radius:10px;padding:11px 16px;font-weight:700;font-size:15px;cursor:pointer}.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--lt);color:#14213d}
+.wk{display:flex;justify-content:space-between;gap:10px}.wk .n{font-size:12px;color:var(--goldd);font-weight:800;letter-spacing:.08em}.done{border-color:#2e9e5b}
+ol.steps{padding-left:20px;margin:6px 0}ol.steps li{margin:6px 0}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700;gap:8px}
+#c-bd{display:grid;grid-template-columns:repeat(8,1fr);width:100%;aspect-ratio:1;border:2.5px solid var(--ink);border-radius:6px;overflow:hidden;touch-action:manipulation}
+.q{position:relative;display:flex;align-items:center;justify-content:center;font-size:clamp(26px,9vw,50px);cursor:pointer;user-select:none;line-height:1}
+.q.l{background:var(--lt)}.q.d{background:var(--dk)}.q.la::after,.q.sl::after,.q.ck::after{content:"";position:absolute;inset:0}.q.la::after{background:var(--last)}.q.sl::after{background:var(--hl)}.q.ck::after{background:var(--chk)}
+.q.tg::before{content:"";position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(40,110,40,.6);z-index:2}.q.tg.oc::before{width:88%;height:88%;background:transparent;border:4px solid rgba(40,110,40,.65)}
+.pc{position:relative;z-index:1}.pc.w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 1px 2px #000}.pc.b{color:#161616;text-shadow:0 0 1px rgba(255,255,255,.6)}
+#c-st{text-align:center;font-weight:700;margin:10px 0;min-height:24px}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tools button{padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:14px}
+.lv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.lv button{padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:700}.lv button.on{background:var(--gold);color:#14213d;border-color:var(--gold)}
+#c-win{position:fixed;inset:0;background:rgba(10,15,30,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:9}#c-win .box{background:var(--card);border-radius:18px;padding:24px;max-width:380px;width:100%;text-align:center;border-top:6px solid var(--gold)}
+.hide{display:none}
+.gh{display:flex;gap:8px;margin:10px 0 0}.gh a{flex:1;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-weight:700;font-size:14px}.gh a.on{background:var(--gold);color:#14213d;border-color:var(--gold)}
+.pcard{display:flex;gap:14px;align-items:flex-start}.pcard .info{flex:1;min-width:0}.pcard h3{display:flex;align-items:center;gap:8px}.pcard .big{font-size:30px;line-height:1}
+.dg{display:grid;flex:none;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:112px}.dg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative}.dg .l{background:var(--lt)}.dg .d{background:var(--dk)}.dg .pz{font-size:20px;color:#14213d;z-index:1}.dg .mv::after{content:"";width:46%;height:46%;border-radius:50%;background:rgba(30,110,40,.8)}.dg .cp::after{content:"✕";color:#a02020;font-weight:800;font-size:15px}
+
+
+:root{--bg:#faf6ea;--card:#fffdf6;--ink:#2b2418;--mute:#6f6653;--gold:#d3a21f;--goldd:#7f5f0c;--line:#e2d8b9;--btn:#8f1d22;--btnt:#fff;--user:#1e5a36;--fixed:#2b2418;--sel:#fbe9a6;--peer:#f4ecd0;--same:#f2d574;--lt:#f3e6c0;--dk:#b8893a;--bad:#b3261e;--badbg:#f8ddd8}
+body{background:var(--bg);color:var(--ink)}
+h1,h2,h3,.bt{font-family:Georgia,"Times New Roman",serif}
+.brand{display:flex;gap:16px;align-items:center;padding:6px 0 16px;border-bottom:4px double var(--gold)}.brand img{height:84px;width:auto;flex:none}
+.bt{font-size:24px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;line-height:1.15}.bs{color:var(--goldd);font-weight:700;font-size:14px;margin-top:3px}.bq{color:var(--mute);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
+.gnav{display:flex;border-bottom:1px solid var(--line);margin:14px 0 4px}.gnav button{flex:1;background:none;border:0;padding:13px 6px;font:700 15px Georgia,"Times New Roman",serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer}.gnav button.on{color:var(--ink);border-bottom-color:var(--gold)}
+.card{border-radius:6px}.btn,.tools button,.lv button,.tabs button,#pad button,#mpad button{border-radius:5px}.tag{border-radius:3px;background:var(--lt);color:#3a2d0a}
+.tabs button.on{background:var(--gold);color:#241c08;border-color:var(--gold)}.lv button.on{background:var(--gold);color:#241c08}
+.tools button.on{background:var(--gold);color:#241c08}.card h2,.card h3{font-family:Georgia,"Times New Roman",serif}
+.hide{display:none!important}
+#login{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#login .lb{width:100%;max-width:400px;text-align:center}#login img{height:96px;width:auto}
+#login h2{margin:10px 0 4px;font-size:22px}#login label{display:block;text-align:left;font-size:13px;font-weight:700;color:var(--goldd);margin:12px 0 4px}
+#login input{width:100%;padding:12px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+#lg-err{color:var(--bad);font-size:13px;min-height:20px;margin:8px 0 0;font-weight:600}
+#mp{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;margin-top:10px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-size:14px}
+#mp b{color:var(--ink)}#mp button{background:none;border:0;color:var(--goldd);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer;padding:4px}
+footer.ft{margin:18px 0 8px;padding:14px 0 6px;border-top:4px double var(--gold);text-align:center;font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--goldd);line-height:1.9}
+footer.ft span{display:inline-block;margin:0 6px}footer.ft i{font-style:normal;color:var(--gold)}
+
+:root{--navy:#14213d;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+.brand,.gnav,#mp,#home>.tabs,#c-home>.tabs{display:none!important}
+.wrap{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn,.tools button{min-height:44px}.btn{font-size:16px}
+#top{display:flex;align-items:center;gap:10px;padding:4px 0 12px}#top img{height:40px;width:auto}#top>div{flex:1;min-width:0}
+#top .tt{font:700 19px/1.1 var(--serif)}#top .ts{font-size:12px;color:var(--mute);margin-top:2px}
+#me{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:4px 12px 4px 4px;font:600 14px system-ui;color:var(--ink);max-width:45%;cursor:pointer}
+#me i{font:700 14px var(--serif);font-style:normal;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#241c08;display:grid;place-items:center;flex:none}
+#me span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gr{font:700 28px/1.15 var(--serif);margin:8px 0 16px}
+.hero{background:var(--navy);color:#fff;border-radius:14px;padding:22px 18px 18px;border-bottom:5px solid var(--gold)}
+.hero .big{font:700 76px/1 var(--serif);color:#f0c94a}.hero .big.sm{font-size:46px}
+.hero .hl{font:600 20px/1.25 var(--serif);margin:6px 0 2px}.hero .hs{margin:0;font-size:14px;opacity:.8}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:2px;background:var(--card);color:var(--ink);border:0;border-radius:10px;padding:14px;min-height:150px;cursor:pointer;font-family:inherit}
+.tile .tg{margin-bottom:8px;height:34px;display:flex;align-items:center;font-size:32px;line-height:1;color:var(--navy)}
+.tile b{font:700 18px var(--serif)}.tile small{font-size:13px;color:var(--mute);line-height:1.3}
+.tile .go{margin-top:auto;align-self:stretch;text-align:center;background:var(--btn);color:#fff;border-radius:6px;padding:10px 0;font-weight:700;font-size:15px}
+.pr{margin:16px 2px 0;font-size:14px;color:var(--mute)}.pr button{background:none;border:0;padding:8px 4px;color:var(--goldd);font:700 14px system-ui;text-decoration:underline;cursor:pointer}
+#gsw{display:flex;background:var(--lt);border-radius:8px;padding:3px;margin:0 0 14px}
+#gsw button{flex:1;border:0;background:none;padding:10px;border-radius:6px;font:700 15px system-ui;color:var(--mute);cursor:pointer}
+#gsw button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+#bn{position:fixed;left:0;right:0;bottom:0;z-index:8;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+#bn button{flex:1;background:none;border:0;min-height:52px;color:var(--mute);font:600 12px system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+#bn svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#bn button.on{color:var(--btn);font-weight:800}
+body:has(#game:not(.hide),#mnv:not(.hide),#c-game:not(.hide)) #bn{display:none}
+.wk .n{font:700 20px var(--serif);letter-spacing:0;color:var(--ink)}.wk h3{font:400 14px system-ui;color:var(--mute);margin:2px 0 0}
+#p2>.card.now,#c-p2>.card.now{border:2px solid var(--btn);background:#fff}
+#p2>.card.lk,#c-p2>.card.lk{background:transparent;border-style:dashed}
+#p2>.more,#c-p2>.more{display:none}
+#wtog{display:none;width:100%;margin-top:4px}body[data-v=weeks] #wtog{display:block}
+details.acc{border-bottom:1px solid var(--line)}details.acc summary{list-style:none;cursor:pointer;padding:15px 2px;font:700 17px var(--serif);display:flex;justify-content:space-between}
+details.acc summary::-webkit-details-marker{display:none}details.acc summary::after{content:"+";color:var(--goldd)}details.acc[open] summary::after{content:"\2212"}
+details.acc[open]{padding-bottom:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+body:not([data-v=learn]) footer.ft{display:none}
+</style><style id="ux">
+html{-webkit-text-size-adjust:100%}
+body{overscroll-behavior-y:contain;-webkit-tap-highlight-color:transparent}
+button,.btn,.tile{touch-action:manipulation}
+.wrap{padding-top:calc(12px + env(safe-area-inset-top,0px))}
+#grid,#c-bd,#mg,.tools button,#pad button,#mpad button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#pad button{position:relative;min-height:48px}
+#pad button::after{content:attr(data-left);position:absolute;top:2px;right:5px;font-size:10px;font-weight:600;color:var(--mute)}
+#pad button.gone::after{content:""}
+#win .box,#c-win .box{max-height:92vh;overflow:auto}
+.btn:active,.tile:active,#pad button:active,.tools button:active{transform:scale(.97)}
+.btn:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#login input:focus,#win input:focus,#c-win input:focus{border-color:var(--gold);outline:0;box-shadow:0 0 0 3px rgba(212,160,23,.3)}
+#off{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:30;background:var(--navy);color:#fff;font:600 12px system-ui;padding:6px 14px;border-radius:99px;box-shadow:0 2px 8px rgba(0,0,0,.25);white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
+#inst{display:flex;align-items:center;justify-content:space-between;gap:12px;border-color:var(--gold);margin:0 0 14px}
+#inst.hide{display:none}
+#inst p{margin:2px 0 0}#inst .ib{display:flex;gap:6px;flex:none}#inst .btn{padding:9px 12px;font-size:14px;min-height:40px}
+body:not([data-v=play]) #inst{display:none}
+@media(max-width:380px){#inst{flex-direction:column;align-items:stretch}#inst .ib{justify-content:flex-end}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.btn:active,.tile:active{transform:none}}
+</style>
+</head><body><div id="login"><div class="lb"><img alt="Cognita Guild crest" src="crest.png"><h2>Member Sign-in</h2><p class="mute">Enter your details once. They are saved on this phone.</p>
+<label for="lg-name">Full name</label><input id="lg-name" autocomplete="name" placeholder="e.g. Ada Okafor">
+<label for="lg-game">Game name</label><input id="lg-game" autocomplete="nickname" maxlength="20" placeholder="The name shown on the leaderboard">
+<label for="lg-id">Membership ID</label><input id="lg-id" autocapitalize="characters" autocomplete="off" placeholder="e.g. QNT-1067">
+<p id="lg-err"></p><button class="btn" style="width:100%" onclick="qLogin()">Save and Enter</button><button class="btn alt" id="lg-cancel" style="width:100%;margin-top:8px;display:none" onclick="qLoginClose()">Cancel</button></div></div><div class="wrap">
+<div id="top"><img alt="" src=""><div><div class="tt">Cognita Guild</div><div class="ts">House of Quanta Game House</div></div><button id="me" onclick="qLoginOpen()" aria-label="Edit member details"><i id="me-i">?</i><span id="me-n"></span></button></div>
+<div class="brand"><img alt="Cognita Guild crest" src="crest.png"><div><div class="bt">Cognita Guild</div><div class="bs">House of Quanta &middot; Game House</div><div class="bq">Forging Intellect, Fostering Mastery</div></div></div>
+<div id="off" class="hide" role="status">Offline · your progress is saved on this device</div>
+<div id="inst" class="hide card"><div><b>Install Cognita Guild</b><p class="mute" id="inst-t"></p></div><div class="ib"><button class="btn" id="inst-go">Install</button><button class="btn alt" id="inst-x" aria-label="Dismiss">Not now</button></div></div>
+<div id="mp" class="hide"><span>Playing as <b id="mp-n"></b> <span class="mute" id="mp-i"></span></span><button onclick="qLoginOpen()">Edit</button></div>
+<nav class="gnav"><button id="gS" class="on" onclick="gSw('S')">Sudoku</button><button id="gC" onclick="gSw('C')">Chess</button></nav>
+<div id="hub"></div><div id="gsw" class="hide"><button id="sw-S" class="on">Sudoku</button><button id="sw-C">Chess</button></div>
+<div id="cr" class="card hide"><h3>Chess rankings</h3><p>There is no chess board yet. Results you send on WhatsApp still count toward your week.</p></div>
+<section id="sud"><div id="home">
+<div class="tabs"><button id="t1" class="on" onclick="tab(1)">How to Play</button><button id="t2" onclick="tab(2)">Weeks</button><button id="t3" onclick="tab(3)">Leaderboard</button></div>
+<div id="p1">
+<div class="card" style="border-color:var(--gold)"><h2>New to Sudoku? Start here</h2><p>Three short lessons, from one box to a full grid. Nothing here is timed or scored.</p><ol class="steps"><li><b>One 3×3 box:</b> fill a single box with 1 to 9, each once. This is the building block of the whole game.</li><li><b>Mini 4×4:</b> the smallest real Sudoku. Every row, column and 2×2 box holds 1 to 4 once.</li><li><b>Full 9×9:</b> take on the Practice Puzzle below with the same ideas.</li></ol><button class="btn" onclick="mini('box',0)">Step 1: 3×3 Box</button> <button class="btn alt" onclick="mini('mini',0)">Step 2: Mini 4×4</button></div>
+<div class="card"><h2>Practice puzzle</h2><p>A full 9×9 you can play any time. It is never scored.</p><button class="btn" onclick="play('practice')">Start practice</button></div>
+<div class="card"><h3>The Rules</h3><ol class="steps"><li>Fill the 9×9 grid so every <b>row</b>, every <b>column</b> and every <b>3×3 box</b> contains the digits 1 to 9 once.</li><li>Numbers already in the grid are fixed clues. You cannot change them.</li><li>Every puzzle has exactly one solution. You never need to guess.</li></ol></div>
+<div class="card"><h3>How to use the board</h3><ol class="steps"><li><b>Tap a cell</b>, then tap a number on the pad (or type on a keyboard).</li><li>A <b style="color:var(--bad)">red</b> number is wrong and adds one to your mistake count. Erase it and try again.</li><li><b>Notes</b> switches to pencil marks: small candidate numbers in a cell.</li><li><b>Erase</b> clears the selected cell. <b>Hint</b> fills the selected cell correctly, and is listed in your result.</li><li>Tap a number to highlight every matching digit on the board.</li></ol></div>
+<div class="card"><h3>Techniques by tier</h3><table><tr><th>Weeks</th><th>Level</th><th>Skill</th></tr><tr><td>1–2</td><td>Easy</td><td>Scanning, last-gap trick</td></tr><tr><td>3–4</td><td>Medium</td><td>Pencil marks</td></tr><tr><td>5–6</td><td>Hard</td><td>Naked pairs</td></tr><tr><td>7–8</td><td>Expert</td><td>Pointing pairs</td></tr><tr><td>9</td><td colspan="2">Guest webinar, no puzzle</td></tr><tr><td>10</td><td>Expert</td><td>Quanta Games capstone</td></tr></table></div>
+<div class="card"><h3>Submitting your result</h3><ol class="steps"><li>Finish the week's puzzle. A Solved screen shows your time and mistakes.</li><li>Tap <b>Send Result on WhatsApp</b>. Your week, time and mistakes are already typed in.</li><li>Choose the House of Quanta community and press send. Submit before the next Saturday session.</li></ol><p class="mute">Only puzzles opened from an unlocked week count toward your score.</p></div>
+</div>
+<div id="p2" class="hide"></div><div id="p3" class="hide"></div>
+</div>
+
+<div id="mnv" class="hide"><div class="bar"><button class="btn alt" onclick="mleave()">← Back</button><span id="mt"></span><span></span></div><div class="card"><p id="mi" style="margin:0"></p></div><div id="mg"></div><div id="mpad"></div><div class="tools"><button onclick="mput(0)">Erase</button><button onclick="mnext(-1)">← Previous</button><button onclick="mnext(1)">Next →</button></div><p id="mmsg" aria-live="polite" style="text-align:center;font-weight:700;min-height:28px"></p></div>
+<div id="game" class="hide">
+<div class="bar"><button class="btn alt" onclick="leave()">← Back</button><span id="gt" onclick="admin()" style="user-select:none"></span><span id="tm">00:00</span><span id="ms">✗ 0</span></div>
+<div id="grid"></div>
+<div class="tools"><button id="nbtn" onclick="toggleNotes()">✎ Notes: Off</button><button onclick="erase()">Erase</button><button onclick="hint()">Hint</button><button onclick="undo()">↶ Undo</button><button id="an" onclick="autoNotes()">Auto-notes</button><button id="ac" onclick="toggleAuto()">Check: On</button></div><div id="adm" class="hide card" style="margin-top:12px"><input id="ai" type="password" placeholder="Admin code" style="padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)"> <button class="btn" onclick="reveal()">Reveal</button></div>
+<div id="pad"></div><p id="hm" aria-live="polite" style="text-align:center;font-size:14px;min-height:22px;margin:10px 0 0;color:var(--goldd);font-weight:600"></p>
+</div>
+<div id="win"><div class="box"><h2 style="margin:0">Solved!</h2><p id="wt"></p><p class="mute" id="wn"></p><input id="nm" placeholder="Your full name" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><input id="aid" placeholder="Membership ID, e.g. QNT-1067" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><button class="btn" id="wa" style="width:100%;margin-bottom:8px">Send Result on WhatsApp</button><button class="btn alt" id="wf" style="width:100%;margin-bottom:8px;display:none">Submit to Guild Form</button><button class="btn alt" style="width:100%" onclick="closeWin()">Back to Weeks</button></div></div>
+</section><section id="chs" class="hide"><div id="c-home"><div class="tabs"><button id="c-t1" class="on" onclick="cTab(1)">How to Play</button><button id="c-t3" onclick="cTab(3)">Pieces</button><button id="c-t4" onclick="cTab(4)">Puzzles</button><button id="c-t2" onclick="cTab(2)">Weeks</button></div>
+<div id="c-p1"><div class="row2"><button class="btn alt" onclick="cTab(3)">Piece guide</button><button class="btn alt" onclick="cTab(4)">Mate puzzles</button></div>
+<div class="card"><h2>Practice game</h2><p>Play White against the House computer. Pick a level below. Nothing here is scored.</p><div class="lv" id="c-plv"></div><button class="btn" onclick="cStartP()">Start practice</button></div>
+<div class="card"><h3>How to play</h3><ol class="steps"><li><b>Tap one of your pieces.</b> Green dots show every legal square it can go to. Green rings mark captures.</li><li>Tap a dot to move. The computer replies straight away.</li><li>Your king glows red when in check. You must escape it.</li><li>Pawns reaching the last rank become a Queen automatically.</li><li>Castling, en passant, checkmate and stalemate all work as in standard chess.</li><li><b>Undo</b> takes back your last move and the reply. Every undo is listed in your result.</li></ol></div>
+<div class="card"><h3>Difficulty by week</h3><table><tr><th>Weeks</th><th>Computer</th></tr><tr><td>1–2</td><td>Easy: makes mistakes</td></tr><tr><td>3–4</td><td>Medium: plans two moves ahead</td></tr><tr><td>5–8</td><td>Hard: plans three moves ahead</td></tr><tr><td>9</td><td>Guest webinar, no game</td></tr><tr><td>10</td><td>Hard: Quanta Games capstone</td></tr></table></div>
+<div class="card"><h3>Scoring and submitting</h3><ol class="steps"><li>A win is best. Fewer moves and fewer undos rank higher. A draw scores less; a loss or resignation scores nothing.</li><li>When the game ends, enter your name and tap <b>Send Result on WhatsApp</b>.</li><li>Choose the House of Quanta community and send before the next Saturday session.</li></ol><p class="mute">Only games opened from an unlocked week count. You may replay a week; your best result is kept on your device.</p></div></div>
+<div id="c-p2" class="hide"></div><div id="c-p4" class="hide"></div>
+<div id="c-p3" class="hide"><div class="card" style="border-color:var(--gold)"><h2>Chess for complete beginners</h2><p>Two armies of 16 pieces face each other. <b>Goal: checkmate</b>, which means trapping the enemy King so it cannot escape capture. Learn each piece below. Green dots are squares it can move to, and ✕ marks squares where a pawn captures.</p></div><div id="c-pl"></div>
+<div class="card"><h3>Setting up the board</h3><ol class="steps"><li>Each player has a white-square corner on their right hand.</li><li>Back row, left to right: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook. The Queen stands on her own colour, the King beside her.</li><li>Pawns fill the row in front. White always moves first.</li></ol></div>
+<div class="card"><h3>Special moves</h3><ol class="steps"><li><b>Castling:</b> King moves two squares toward a Rook, and that Rook jumps to the other side of him. Allowed only if neither has moved, the squares between are empty, and the King is not in check or crossing an attacked square. In this game, tap the King, then the square two steps over.</li><li><b>En passant:</b> if an enemy pawn jumps two squares and lands beside your pawn, you may capture it as if it had moved one square. You must do it right away.</li><li><b>Promotion:</b> a pawn reaching the far rank becomes another piece. Here it becomes a Queen.</li></ol></div>
+<div class="card"><h3>Check, checkmate, stalemate</h3><ol class="steps"><li><b>Check:</b> your King is attacked. You must escape by moving it, blocking, or capturing the attacker.</li><li><b>Checkmate:</b> in check with no escape. Game over.</li><li><b>Stalemate:</b> not in check, but no legal move. It is a draw.</li></ol></div>
+<div class="card"><h3>First tips</h3><ol class="steps"><li>Before every move, ask: what is the computer threatening?</li><li>Control the centre with pawns, then bring out Knights and Bishops.</li><li>Castle early to protect your King.</li><li>Do not trade a bigger piece for a smaller one. Use the values above.</li><li>Start on Easy in practice. Use Undo freely while learning.</li></ol><button class="btn" onclick="cTab(1)">Back to Play</button></div></div></div>
+<div id="c-game" class="hide"><div class="bar"><button class="btn alt" onclick="cLeave()">← Back</button><span id="c-gt"></span><span id="c-mv">Move 1</span></div>
+<div id="c-bd"></div><div id="c-st" aria-live="polite"></div><div class="tools"><button onclick="cUndo()">↶ Undo</button><button onclick="cResign()">Resign</button><button onclick="cRestart()">New Game</button></div></div>
+<div id="c-win"><div class="box"><h2 id="c-wh" style="margin:0"></h2><p id="c-wt"></p><input id="c-nm" placeholder="Your full name" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><input id="c-aid" placeholder="Membership ID, e.g. QNT-1067" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><button class="btn" id="c-wa" style="width:100%;margin-bottom:8px">Send Result on WhatsApp</button><button class="btn alt" id="c-wf" style="width:100%;margin-bottom:8px;display:none">Submit to Guild Form</button><button class="btn alt" style="width:100%" onclick="cClose()">Close</button></div></div></section><button id="wtog" class="btn alt">Show all weeks</button><footer class="ft"><span>NUNSA FUOYE</span><i>&#9670;</i><span>Cognita Guild</span><i>&#9670;</i><span>House of Quanta</span></footer></div>
+<script>
+const GH_FORM='',GH_ENTRY={name:'',id:'',game:'',week:'',result:'',code:''}; // Google Form prefill link and entry IDs go here
+function ghCode(s){let x=2166136261;const t=s+'|quanta-2026';for(let i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,16777619)}return(x>>>0).toString(36).toUpperCase().padStart(6,'0').slice(-6)}
+function ghBind(wa,wf,get){const mk=()=>{const d=get(),id=(d.id||'').trim().toUpperCase(),nm=(d.name||'').trim();try{localStorage.setItem('quanta-name',nm);localStorage.setItem('quanta-id',id)}catch(e){}const st=Object.entries(d.stats),body=st.map(([k,v])=>k+': '+v).join(' | '),code=ghCode([id,d.game,d.week,body].join('|'));return{d,id,nm,body,code,st}};
+wa.onclick=()=>{const x=mk();window.open('https://wa.me/?text='+encodeURIComponent(`Cognita Guild, House of Quanta\nName: ${x.nm||'-'}\nGame name: ${window.qGame()||'-'}\nID: ${x.id||'-'}\n${x.d.game} ${x.d.week}\n${x.st.map(([k,v])=>k+': '+v).join('\n')}\nCode: ${x.code}`),'_blank')};
+wf.style.display=GH_FORM?'':'none';wf.onclick=()=>{const x=mk(),v={name:x.nm,id:x.id,game:x.d.game,week:x.d.week,result:x.body,code:x.code};window.open(GH_FORM+(GH_FORM.includes('?')?'&':'?')+'usp=pp_url&'+Object.keys(v).filter(k=>GH_ENTRY[k]).map(k=>GH_ENTRY[k]+'='+encodeURIComponent(v[k])).join('&'),'_blank')}}
+const PZ={"practice": {"p": "054607892900000146062004703490000208000000000018279005009702301001940587870300024", "s": "354617892987523146162894753493165278725438619618279435549782361231946587876351924"}, "1": {"p": "500601079010030800700900506402017960008009104090854007007003020200100703830472090", "s": "584621379619735842723948516452317968378269154196854237967583421245196783831472695"}, "2": {"p": "674300800003500071500900000832050040700820006400030010950000603320005184046200750", "s": "674312895293568471581947362832156947719824536465739218958471623327695184146283759"}, "3": {"p": "007203960060058070000070002400600830306000509020305041000009006080024390039060000", "s": "157243968962158473843976152495612837316487529728395641574839216681724395239561784"}, "4": {"p": "460005002907000008008032000800043006000080321600017040000006490300900615000004203", "s": "463895172927461538158732964819243756745689321632517849281356497374928615596174283"}, "5": {"p": "801090000407601030003080000000007903008000700005000600060000024702800300004906501", "s": "851392467497651238623784159246517983138269745975438612569173824712845396384926571"}, "6": {"p": "000060000031872000060000079089006030000020198000100000004000053008040710073005000", "s": "427569381931872645865431279189756432756324198342198567214687953598243716673915824"}, "7": {"p": "000170064940000000700000200010900020070400000650008030000060000084000000503090701", "s": "825173964946582173731649258418936527379425816652718439297861345184357692563294781"}, "8": {"p": "080410090100000500000000307400800003230000100000020008000900000510700600700004059", "s": "385417296197236584642598317456871923238649175971325468864952731519783642723164859"}, "10": {"p": "000000900460530000000702004700200005006800000090067000309400700000000800051600002", "s": "587146923462539187913782564738294615246851379195367248329418756674925831851673492"}};
+const WK=[[1,'Easy','Scanning: hunt for the digit that fits only one place',[2026,9,24]],[2,'Easy','Last-gap trick: finish rows, columns and boxes with one gap',[2026,9,31]],[3,'Medium','Pencil marks: write every candidate, then eliminate',[2026,10,7]],[4,'Medium','Pencil marks: sharpen your elimination',[2026,10,14]],[5,'Hard','Naked pairs: two cells sharing the same two candidates',[2026,10,21]],[6,'Hard','Naked pairs: apply them across rows and boxes',[2026,10,28]],[7,'Expert','Pointing pairs: a box that aims at a row or column',[2026,11,5]],[8,'Expert','Final submission: combine every technique',[2027,0,9]],[9,'Webinar','Guest webinar. No puzzle this week',[2027,0,16]],[10,'Expert','Quanta Games capstone',[2027,0,23]]];
+const MP={box:[[5,3,4,6,7,0,1,9,8],[5,0,4,6,7,0,1,0,8],[0,3,0,6,0,2,0,9,0],[0,0,4,0,0,2,1,0,0]],mini:[[0, 0, 1, 3, 0, 1, 2, 0, 2, 3, 4, 1, 1, 0, 3, 2], [0, 0, 0, 0, 1, 3, 0, 4, 3, 0, 4, 2, 4, 0, 3, 1], [0, 1, 0, 3, 0, 0, 0, 0, 2, 3, 1, 0, 0, 4, 0, 2]]};
+const MI={box:'Fill the blanks so the box holds every digit from 1 to 9 exactly once. Any number twice turns red.',mini:'Fill the 4×4 grid so every row, column and 2×2 box holds 1, 2, 3 and 4 once. Any clash turns red.'};
+let MT=null;
+function mini(k,i){MT={k,i,n:k==='box'?3:4,D:k==='box'?9:4};MT.c=[...MP[k][i]];MT.fx=MT.c.map(x=>x>0);MT.sel=-1;const n=MT.n;MT.g=k==='box'?[[...Array(9).keys()]]:[...Array(4).keys()].flatMap(a=>[[0,1,2,3].map(b=>a*4+b),[0,1,2,3].map(b=>b*4+a),[0,1,2,3].map(b=>((a>>1)*2+(b>>1))*4+(a&1)*2+(b&1))]);
+$('home').classList.add('hide');$('mnv').classList.remove('hide');$('mg').style.gridTemplateColumns=`repeat(${n},1fr)`;$('mg').style.width=(n===3?220:260)+'px';$('mt').textContent=(k==='box'?'3×3 Box':'Mini 4×4')+' · '+(i+1)+'/'+MP[k].length;$('mi').textContent=MI[k];$('mmsg').textContent='';
+$('mpad').innerHTML=[...Array(MT.D).keys()].map(x=>`<button onclick="mput(${x+1})">${x+1}</button>`).join('');mdraw()}
+function mbad(){const b=new Set();for(const g of MT.g){const s={};for(const i of g){const v=MT.c[i];if(v)(s[v]=s[v]||[]).push(i)}for(const v in s)if(s[v].length>1)s[v].forEach(i=>b.add(i))}return b}
+function mdraw(){const b=mbad();$('mg').innerHTML=MT.c.map((v,i)=>`<div class="m ${MT.fx[i]?'f':v?'u':''} ${i===MT.sel?'s':''} ${b.has(i)?'w':''}" onclick="MT.sel=${i};mdraw()">${v||''}</div>`).join('')}
+function mput(v){if(MT.sel<0||MT.fx[MT.sel])return;MT.c[MT.sel]=v;mdraw();const b=mbad();if(MT.c.every(x=>x)&&!b.size){const last=MT.i===MP[MT.k].length-1;$('mmsg').innerHTML=last?(MT.k==='box'?'Box complete! Now try the Mini 4×4 →':'You have the idea! Try the practice puzzle under Learn.'):'Solved! Tap Next →'}else $('mmsg').textContent=''}
+function mnext(d){const n=MT.i+d;if(n>=0&&n<MP[MT.k].length)mini(MT.k,n);else if(d>0&&MT.k==='box')mini('mini',0)}
+function mleave(){$('mnv').classList.add('hide');$('home').classList.remove('hide')}
+const LB=[]; // {n:'Name',w:1,t:'mm:ss',m:0,h:0}
+const L={1:'Pick a digit, say 5. Scan every row, column and box that already holds a 5. A box left with only one open cell that can take a 5 gives you your answer.',2:'Find a row, column or box with 8 filled cells. The missing digit is the one not yet used there. Clear these first; they open up the rest.',3:'In every empty cell, write small numbers for what could still fit. When a cell has one mark left, it is solved. Remove marks as you place digits.',4:'Use marks to spot a digit that has only one possible cell in a row, column or box, even if that cell also holds other marks.',5:'If two cells in a unit both hold only the same two marks, say 3 and 7, those digits belong to them. Delete 3 and 7 from every other cell in that unit.',6:'Naked pairs also work inside a box. Look for matching two-mark cells, then clean the shared row, column or box.',7:'If a digit can only go in one row inside a box, it cannot appear in that row anywhere else. Delete it from the rest of that row.',8:'Combine everything: scan, mark, pair and point. Work slowly; one wrong digit costs more than time.',10:'The capstone uses every technique. Trust your marks, look for pairs and pointing lines, and keep mistakes at zero.'};
+const unlockAt=d=>Date.UTC(d[0],d[1],d[2],-1); // midnight WAT
+const fmt=d=>new Date(Date.UTC(d[0],d[1],d[2])).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+let saved={};try{saved=JSON.parse(localStorage.getItem('quanta-sudoku')||'{}')}catch(e){}
+const store=()=>{try{localStorage.setItem('quanta-sudoku',JSON.stringify(saved))}catch(e){}};
+const $=id=>document.getElementById(id);
+function tab(n){for(const i of[1,2,3]){$('p'+i).classList.toggle('hide',i!==n);$('t'+i).classList.toggle('on',i===n)}if(n===2)renderWeeks();if(n===3)renderLB()}
+function renderWeeks(){$('p2').innerHTML=WK.map(([n,lv,sk,d])=>{const open=Date.now()>=unlockAt(d),s=saved[n];
+let act='';if(n===9)act='<span class="mute">Join the live webinar on Google Meet.</span>';
+else if(open)act=`<button class="btn" onclick="play(${n},1)">${s?'Play again':'Play this week'}</button>`;
+else act=`<span class="mute">Opens ${fmt(d)}, 12:00 am WAT</span><br><button class="btn alt" style="margin-top:8px" onclick="play(${n},0)">Try early, not scored</button>`;
+return `<div class="card ${open?'':'lock'} ${s?'done':''}"><div class="wk"><div><div class="n">Week ${n}</div><h3>${fmt(d)}</h3></div><span class="tag">${lv}</span></div><p>${sk}</p>${s?`<p class="mute">✓ Best scored time: ${T(s.t)}, ${s.m} mistake${s.m==1?'':'s'}</p>`:''}${L[n]?`<details><summary class="mute" style="cursor:pointer">Mini-lesson</summary><p style="font-size:14px">${L[n]}</p></details>`:''}${act}</div>`}).join('')}
+function renderLB(){const ws=[...new Set(LB.map(x=>x.w))].sort((a,b)=>a-b);const sc=x=>x.t.split(':').reduce((a,b)=>a*60+ +b,0)+x.m*30+(x.h||0)*60;$('p3').innerHTML=ws.length?ws.map(w=>`<div class="card"><h3>Week ${w}</h3><table><tr><th>#</th><th>Ambassador</th><th>Time</th><th>✗</th></tr>${LB.filter(x=>x.w===w).sort((a,b)=>sc(a)-sc(b)).map((x,i)=>`<tr><td>${i+1}</td><td>${x.n.replace(/</g,'&lt;')}</td><td>${x.t}</td><td>${x.m}</td></tr>`).join('')}</table></div>`).join('')+'<p class="mute">Ranked by time plus 30 seconds per mistake and 60 per hint.</p>':'<div class="card"><h3>Leaderboard</h3><p>Results appear here after each Saturday session. Send your result on WhatsApp to be ranked.</p></div>'}
+const T=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+let G,cur,scored,sel=-1,notes=false,timer,secs,mist,hints,fin,hist=[],auto=true,PR={};try{PR=JSON.parse(localStorage.getItem('quanta-prog')||'{}')}catch(e){}
+const key=()=>cur+'-'+(scored?1:0);
+function persist(){if(fin)return;PR[key()]={v:G.v,n:G.n.map(s=>[...s]),secs,mist,hints};try{localStorage.setItem('quanta-prog',JSON.stringify(PR))}catch(e){}}
+function snap(){hist.push({v:[...G.v],n:G.n.map(s=>new Set(s))});if(hist.length>200)hist.shift()}
+function undo(){if(fin||!hist.length)return;const s=hist.pop();G.v=s.v;G.n=s.n;draw();persist()}
+function toggleAuto(){auto=!auto;$('ac').textContent='Check: '+(auto?'On':'Off');draw()}
+function autoNotes(){if(fin||(typeof cur==='number'&&cur>=5))return;snap();for(let i=0;i<81;i++){G.n[i].clear();if(G.v[i])continue;const r=i/9|0,c=i%9;for(let n=1;n<=9;n++){let ok=true;for(let j=0;j<81;j++){const rr=j/9|0,cc=j%9;if(G.v[j]===n&&(rr===r||cc===c||((rr/3|0)===(r/3|0)&&(cc/3|0)===(c/3|0)))){ok=false;break}}if(ok)G.n[i].add(n)}}draw();persist()}
+function play(w,sc){cur=w;scored=!!sc;const z=PZ[w];G={p:[...z.p].map(Number),s:[...z.s].map(Number),v:[...z.p].map(Number),n:Array.from({length:81},()=>new Set()),fx:[...z.p].map(x=>x!=='0')};
+sel=-1;notes=false;secs=0;mist=0;hints=0;fin=false;$('nbtn').textContent='✎ Notes: Off';$('nbtn').classList.remove('on');
+$('home').classList.add('hide');$('game').classList.remove('hide');
+$('gt').textContent=w==='practice'?'Practice':(scored?'Week '+w:'Week '+w+' (practice)');
+$('hm').textContent='';hist=[];auto=!(cur===7||cur===8||cur===10);$('ac').textContent='Check: '+(auto?'On':'Off');const lk=typeof cur==='number'&&cur>=5;$('an').textContent=lk?'Auto-notes (locked)':'Auto-notes';$('an').style.opacity=lk?.5:1;$('adm').classList.add('hide');const pr=PR[key()];if(pr){G.v=pr.v;G.n=pr.n.map(a=>new Set(a));secs=pr.secs;mist=pr.mist;hints=pr.hints}
+clearInterval(timer);timer=setInterval(()=>{secs++;$('tm').textContent=T(secs);if(secs%10===0)persist()},1000);$('tm').textContent=T(secs);$('ms').textContent='✗ '+mist;
+$('pad').innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<button id="k${n}" onclick="put(${n})">${n}</button>`).join('');draw();scrollTo(0,0)}
+function leave(){persist();clearInterval(timer);$('game').classList.add('hide');$('home').classList.remove('hide');if(!$('p2').classList.contains('hide'))renderWeeks()}
+function closeWin(){$('win').style.display='none';leave();tab(2)}
+function draw(){const g=$('grid');let h='';const sv=sel>=0?G.v[sel]:0;
+for(let i=0;i<81;i++){const r=i/9|0,c=i%9;let k='c r'+r;
+if(sel>=0){if(i===sel)k+=' s';else if(sv&&G.v[i]===sv)k+=' s2';else if(r===(sel/9|0)||c===sel%9||((r/3|0)===((sel/9|0)/3|0)&&(c/3|0)===((sel%9)/3|0)))k+=' p'}
+const v=G.v[i];if(G.fx[i])k+=' f';else if(v){k+=(auto&&v!==G.s[i])?' w':' u'}
+let inner=v?v:(G.n[i].size?'<div class="nt">'+[1,2,3,4,5,6,7,8,9].map(n=>`<span>${G.n[i].has(n)?n:''}</span>`).join('')+'</div>':'');
+h+=`<div class="${k}" onclick="pick(${i})">${inner}</div>`}
+g.innerHTML=h;for(let n=1;n<=9;n++){const used=G.v.filter(x=>x===n).length;$('k'+n).classList.toggle('gone',used>=9);$('k'+n).dataset.left=used>=9?'':9-used}}
+function pick(i){sel=i;$('hm').textContent='';draw()}
+function toggleNotes(){notes=!notes;$('nbtn').textContent='✎ Notes: '+(notes?'On':'Off');$('nbtn').classList.toggle('on',notes)}
+function put(n){if(fin)return;if(sel<0){$('hm').textContent='Tap a cell first, then choose a number.';return}if(G.fx[sel])return;
+if(notes){if(G.v[sel])return;snap();G.n[sel].has(n)?G.n[sel].delete(n):G.n[sel].add(n);draw();persist();return}
+if(G.v[sel]===G.s[sel])return;snap();G.v[sel]=n;G.n[sel].clear();
+if(n!==G.s[sel]){mist++;$('ms').textContent='✗ '+mist;try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}}
+else{const r=sel/9|0,c=sel%9,br=r/3|0,bc=c/3|0;for(let j=0;j<81;j++){const rr=j/9|0,cc=j%9;if(rr===r||cc===c||((rr/3|0)===br&&(cc/3|0)===bc))G.n[j].delete(n)}}
+draw();persist();check()}
+function erase(){if(fin||sel<0||G.fx[sel]||G.v[sel]===G.s[sel])return;snap();G.v[sel]=0;G.n[sel].clear();draw();persist()}
+function peersOf(x){const r=x/9|0,c=x%9,o=[];for(let j=0;j<81;j++){const rr=j/9|0,cc=j%9;if(j!==x&&(rr===r||cc===c||((rr/3|0)===(r/3|0)&&(cc/3|0)===(c/3|0))))o.push(j)}return o}
+function candsOf(x){if(G.v[x])return[];const u=new Set(peersOf(x).map(j=>G.v[j]));return[1,2,3,4,5,6,7,8,9].filter(n=>!u.has(n))}
+function why(i){const old=G.v[i];G.v[i]=0;const v=G.s[i],r=i/9|0,c=i%9;let out=null;
+if(candsOf(i).length===1)out=`Row ${r+1}, column ${c+1} can only be ${v}. Every other digit already appears in its row, column or box.`;
+else for(const[nm,f]of[['row',j=>(j/9|0)===r],['column',j=>j%9===c],['box',j=>(j/27|0)===(r/3|0)&&((j%9)/3|0)===(c/3|0)]]){let n=0;for(let j=0;j<81;j++)if(f(j)&&!G.v[j]&&candsOf(j).includes(v))n++;if(n===1){out=`In this ${nm}, ${v} has no other place to go, so it must go here.`;break}}
+G.v[i]=old;return out||`Try ${v} here. Write pencil marks in the row, column and box to see why.`}
+function hint(){if(fin)return;if(sel<0||G.fx[sel]||G.v[sel]===G.s[sel]){$('hm').textContent='Tap an empty cell first, then tap Hint.';return}if(scored&&!confirm('A hint adds 60 seconds to your score. Reveal this cell?'))return;$('hm').textContent=why(sel);snap();G.v[sel]=G.s[sel];G.n[sel].clear();hints++;draw();persist();check()}
+const ADMIN='QUANTA-ADMIN';let ac=0,at=0;
+function admin(){const t=Date.now();ac=t-at<1500?ac+1:1;at=t;if(ac>=5){ac=0;$('adm').classList.remove('hide')}}
+function reveal(){if($('ai').value!==ADMIN||fin)return;fin=true;clearInterval(timer);scored=false;G.v=[...G.s];G.n.forEach(s=>s.clear());sel=-1;draw();$('adm').classList.add('hide');$('gt').textContent='Solution (not scored)'}
+function check(){if(G.v.every((v,i)=>v===G.s[i]))win()}
+function win(){fin=true;clearInterval(timer);delete PR[key()];try{localStorage.setItem('quanta-prog',JSON.stringify(PR))}catch(e){}try{$('nm').value=localStorage.getItem('quanta-name')||''}catch(e){}$('nm').style.display=scored?'':'none';$('aid').style.display=scored?'':'none';$('wf').style.display='none';try{$('aid').value=localStorage.getItem('quanta-id')||''}catch(e){}const lab=cur==='practice'?'Practice':'Week '+cur;
+$('wt').innerHTML=`<b>${lab}</b><br>Time <b>${T(secs)}</b> · Mistakes <b>${mist}</b>${hints?' · Hints <b>'+hints+'</b>':''}`;
+if(scored){const s=saved[cur];if(!s||secs+mist*30<s.t+s.m*30){saved[cur]={t:secs,m:mist};store()}
+$('wn').textContent='Screenshot this screen too, as a backup.';$('wa').style.display='';
+ghBind($('wa'),$('wf'),()=>({name:$('nm').value,id:$('aid').value,game:'Sudoku',week:'Week '+cur,stats:{Time:T(secs),Mistakes:mist,Hints:hints}}))}
+else{$('wn').textContent='Practice runs are not scored, so there is nothing to send.';$('wa').style.display='none'}
+setTimeout(()=>$('win').style.display='flex',350)}
+document.addEventListener('keydown',e=>{if(/^(INPUT|TEXTAREA)$/.test((e.target||{}).tagName))return;if($('sud').classList.contains('hide')||$('game').classList.contains('hide'))return;
+if(e.key>='1'&&e.key<='9')put(+e.key);else if(e.key==='Backspace'||e.key==='Delete')erase();
+else if(e.key.startsWith('Arrow')&&sel>=0){const d={ArrowLeft:-1,ArrowRight:1,ArrowUp:-9,ArrowDown:9}[e.key];const n=sel+d;if(n>=0&&n<81&&!(d===-1&&sel%9===0)&&!(d===1&&sel%9===8)){sel=n;draw()}e.preventDefault()}});
+</script>
+<script>function gSw(k){for(const[a,b,c]of[['S','sud','gS'],['C','chs','gC']]){document.getElementById(b).classList.toggle('hide',k!==a);document.getElementById(c).classList.toggle('on',k===a)}scrollTo(0,0)}</script>
+<script>(function(){
+const VAL={P:100,N:320,B:330,R:500,Q:900,K:0};
+function init(){const b=Array(64).fill(''),r='RNBQKBNR';for(let i=0;i<8;i++){b[i]='b'+r[i];b[8+i]='bP';b[48+i]='wP';b[56+i]='w'+r[i]}return{b,t:'w',c:{K:1,Q:1,k:1,q:1},ep:-1,hm:0}}
+const KN=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]],KG=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]],RD=[[1,0],[-1,0],[0,1],[0,-1]],BD=[[1,1],[1,-1],[-1,1],[-1,-1]];
+function attacked(b,sq,by){const r=sq>>3,c=sq&7,at=(r2,c2,p)=>r2>=0&&r2<8&&c2>=0&&c2<8&&b[r2*8+c2]===by+p;
+const pr=r+(by==='w'?1:-1);if(at(pr,c-1,'P')||at(pr,c+1,'P'))return 1;
+for(const[a,d]of KN)if(at(r+a,c+d,'N'))return 1;for(const[a,d]of KG)if(at(r+a,c+d,'K'))return 1;
+for(const[dirs,ks]of[[RD,'RQ'],[BD,'BQ']])for(const[a,d]of dirs){let r2=r+a,c2=c+d;while(r2>=0&&r2<8&&c2>=0&&c2<8){const q=b[r2*8+c2];if(q){if(q[0]===by&&ks.includes(q[1]))return 1;break}r2+=a;c2+=d}}return 0}
+const inCheck=(s,t)=>attacked(s.b,s.b.indexOf(t+'K'),t==='w'?'b':'w');
+function pm(s){const m=[],{b,t}=s,o=t==='w'?'b':'w';
+for(let i=0;i<64;i++){const p=b[i];if(!p||p[0]!==t)continue;const r=i>>3,c=i&7,k=p[1];
+const add=(r2,c2)=>{if(r2<0||r2>7||c2<0||c2>7)return 0;const j=r2*8+c2,q=b[j];if(q&&q[0]===t)return 0;m.push({f:i,t:j});return q?0:1};
+if(k==='P'){const d=t==='w'?-1:1,st=t==='w'?6:1,pr=t==='w'?0:7,r2=r+d;
+const pu=(j,ep)=>m.push({f:i,t:j,ep,p:(j>>3)===pr?'Q':0});
+if(!b[r2*8+c]){pu(r2*8+c);if(r===st&&!b[(r+2*d)*8+c])pu((r+2*d)*8+c)}
+for(const dc of[-1,1]){const c2=c+dc;if(c2<0||c2>7)continue;const j=r2*8+c2;if(b[j]&&b[j][0]===o)pu(j);else if(j===s.ep)pu(j,1)}}
+else if(k==='N')for(const[a,d]of KN)add(r+a,c+d);
+else if(k==='K'){for(const[a,d]of KG)add(r+a,c+d);const h=t==='w'?56:0;
+if(i===h+4&&!attacked(b,i,o)){if(s.c[t==='w'?'K':'k']&&!b[h+5]&&!b[h+6]&&b[h+7]===t+'R'&&!attacked(b,h+5,o))m.push({f:i,t:h+6});
+if(s.c[t==='w'?'Q':'q']&&!b[h+3]&&!b[h+2]&&!b[h+1]&&b[h]===t+'R'&&!attacked(b,h+3,o))m.push({f:i,t:h+2})}}
+else for(const[a,d]of(k==='R'?RD:k==='B'?BD:KG)){let r2=r+a,c2=c+d;while(add(r2,c2)){r2+=a;c2+=d}}}
+return m}
+function apply(s,m){const b=s.b.slice(),p=b[m.f],t=s.t,n={b,t:t==='w'?'b':'w',c:{...s.c},ep:-1,hm:(p[1]==='P'||b[m.t])?0:s.hm+1};
+if(m.ep)b[m.t+(t==='w'?8:-8)]='';b[m.t]=m.p?t+m.p:p;b[m.f]='';
+if(p[1]==='K'&&Math.abs(m.t-m.f)===2){if(m.t>m.f){b[m.f+1]=b[m.f+3];b[m.f+3]=''}else{b[m.f-1]=b[m.f-4];b[m.f-4]=''}}
+if(p[1]==='P'&&Math.abs(m.t-m.f)===16)n.ep=(m.f+m.t)/2;
+if(p[1]==='K'){n.c[t==='w'?'K':'k']=0;n.c[t==='w'?'Q':'q']=0}
+for(const q of[m.f,m.t]){if(q===56)n.c.Q=0;if(q===63)n.c.K=0;if(q===0)n.c.q=0;if(q===7)n.c.k=0}return n}
+const legal=s=>pm(s).filter(m=>!inCheck(apply(s,m),s.t));
+function ev(s){let v=0;for(let i=0;i<64;i++){const p=s.b[i];if(!p)continue;const r=i>>3,c=i&7,k=p[1];let x=VAL[k];
+if(k==='N'||k==='B')x+=(7-Math.abs(2*c-7)-Math.abs(2*r-7))*4;if(k==='P')x+=(p[0]==='w'?6-r:r-1)*6+(3-Math.abs(c-3.5))*2;
+v+=p[0]==='w'?x:-x}return s.t==='w'?v:-v}
+function search(s,d,a,b){if(!d)return ev(s);const ms=legal(s);if(!ms.length)return inCheck(s,s.t)?-99000-d:0;
+ms.sort((x,y)=>(s.b[y.t]?VAL[s.b[y.t][1]]:0)-(s.b[x.t]?VAL[s.b[x.t][1]]:0));
+for(const m of ms){const v=-search(apply(s,m),d-1,-b,-a);if(v>=b)return b;if(v>a)a=v}return a}
+function pick(s,lv){const ms=legal(s),D=[1,2,3][lv],N=[150,25,0][lv];let best=null,bv=-1e9;
+for(const m of ms){const v=-search(apply(s,m),D-1,-1e9,1e9)+Math.random()*N;if(v>bv){bv=v;best=m}}return best}
+function perft(s,d){if(!d)return 1;let n=0;for(const m of legal(s))n+=perft(apply(s,m),d-1);return n}
+
+const WK=[[1,0,'Easy',[2026,9,24]],[2,0,'Easy',[2026,9,31]],[3,1,'Medium',[2026,10,7]],[4,1,'Medium',[2026,10,14]],[5,2,'Hard',[2026,10,21]],[6,2,'Hard',[2026,10,28]],[7,2,'Hard',[2026,11,5]],[8,2,'Hard',[2027,0,9]],[9,0,'Webinar',[2027,0,16]],[10,2,'Hard',[2027,0,23]]];
+const LN=['Easy','Medium','Hard'],unlockAt=d=>Date.UTC(d[0],d[1],d[2],-1),fmt=d=>new Date(Date.UTC(d[0],d[1],d[2])).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+let saved={};try{saved=JSON.parse(localStorage.getItem('quanta-chess')||'{}')}catch(e){}
+const $=id=>document.getElementById('c-'+id);let plv=0;function cLv(i){plv=i;[...$('plv').children].forEach((b,j)=>b.classList.toggle('on',j===i))}function cStartP(){start('practice',0,plv)}
+$('plv').innerHTML=LN.map((n,i)=>`<button class="${i===0?'on':''}" onclick="cLv(${i})">${n}</button>`).join('');
+function tab(n){for(const i of[1,2,3,4]){$('p'+i).classList.toggle('hide',i!==n);$('t'+i).classList.toggle('on',i===n)}if(n===2)weeks();if(n===3)learn();if(n===4)pzList()}
+function weeks(){$('p2').innerHTML=WK.map(([n,lv,nm,d])=>{const open=Date.now()>=unlockAt(d),s=saved[n];let a;
+if(n===9)a='<span class="mute">Join the live webinar on Google Meet.</span>';
+else if(open)a=`<button class="btn" onclick="cStart(${n},1,${lv})">${s?'Play again':'Play this week'}</button>`;
+else a=`<span class="mute">Opens ${fmt(d)}, 12:00 am WAT</span><br><button class="btn alt" style="margin-top:8px" onclick="cStart(${n},0,${lv})">Try early, not scored</button>`;
+return `<div class="card ${s?'done':''}"><div class="wk"><div><div class="n">Week ${n}</div><h3>${fmt(d)}</h3></div><span class="tag">${nm}</span></div>${s?`<p class="mute">✓ Best: ${s.r}${s.mv?', '+s.mv+' moves':''}</p>`:''}<p style="margin-top:10px">${a}</p></div>`}).join('')}
+const PI=[['K','King',0,'One square in any direction, straight or diagonal. It can never move into check. Lose it and the game is lost, so protect it.','Priceless'],['Q','Queen',9,'Any number of squares in a straight line: forward, back, sideways or diagonal, as far as the path is clear. The strongest piece.','9 points'],['R','Rook',5,'Any number of squares forward, back or sideways, never diagonal. Strong on open files and in castling.','5 points'],['B','Bishop',3,'Any number of squares diagonally. It stays on its starting colour for the whole game, so pair your two Bishops.','3 points'],['N','Knight',3,'An L-shape: two squares one way, then one square sideways. It is the only piece that jumps over others.','3 points'],['P','Pawn',1,'Moves forward one square (two from its start row). It captures one square diagonally forward, never straight. Reaching the far end promotes it.','1 point']];
+function dia(k){const n=k==='P'?3:7,R=k==='P'?4:7,cx=k==='P'?1:3,cy=k==='P'?3:3,S=new Set(),C=new Set();
+const line=ds=>ds.forEach(([a,b])=>{let x=cx+a,y=cy+b;while(x>=0&&x<n&&y>=0&&y<R){S.add(y*n+x);x+=a;y+=b}}),one=ds=>ds.forEach(([a,b])=>{const x=cx+a,y=cy+b;if(x>=0&&x<n&&y>=0&&y<R)S.add(y*n+x)});
+if(k==='K')one(KG);if(k==='N')one(KN);if(k==='R')line(RD);if(k==='B')line(BD);if(k==='Q')line([...RD,...BD]);if(k==='P'){S.add(2*n+1);S.add(1*n+1);C.add(2*n+0);C.add(2*n+2)}
+let h=`<div class="dg" style="grid-template-columns:repeat(${n},1fr)">`;for(let i=0;i<n*R;i++){const x=i%n,y=i/n|0,me=x===cx&&y===cy;h+=`<div class="${(x+y)%2?'d':'l'} ${S.has(i)?'mv':''} ${C.has(i)?'cp':''}">${me?`<span class="pz">${SY[k]}\uFE0E</span>`:''}</div>`}return h+'</div>'}
+function learn(){$('pl').innerHTML=PI.map(([k,nm,v,t,val])=>`<div class="card pcard"><div class="info"><h3><span class="big">${SY[k]}\uFE0E</span>${nm}</h3><p>${t}</p><span class="tag">${val}</span></div>${dia(k)}</div>`).join('')}
+const PZD={"m1":[{"b":"r...k.........R.........p...p........p.....Pb...P...P..R.....B.K","m":[55,7]},{"b":"...k.........Q......P...............P....p...P...P.........K....","m":[13,11]},{"b":"...k....Q...........P...............PP...p.......P.........K....","m":[8,11]},{"b":"..k.B.........p..............p.p.Q...B.P.............K.......R..","m":[33,1]},{"b":"..k...........p..............p.pBQ...B.P.............K.........R","m":[33,1]},{"b":"......k.....p..........B.p................Q.....R.P..K.......B..","m":[42,14]}],"m2":[{"b":"k..................P........N.K........Rp.......P.......R.......","m":[56,57]},{"b":"........k..........P........N.K..R......p.......P.......R.......","m":[56,57]},{"b":".....k...R......................Pp.p...P............R.....K.....","m":[52,50]},{"b":"..k..........Q......P...............PP...p.......P.........K....","m":[13,8]},{"b":"R......................pp.....k.P.............K......R.....N....","m":[0,6]},{"b":".k.............P..............R.PK..P....P......................","m":[30,14]}]};let pz=null,pzs={};try{pzs=JSON.parse(localStorage.getItem('quanta-pz')||'{}')}catch(e){}
+const PZL=[...PZD.m1.map((p,i)=>({...p,k:1,id:'m1-'+i})),...PZD.m2.map((p,i)=>({...p,k:2,id:'m2-'+i}))];
+const dec=s=>({b:[...s].map(ch=>ch==='.'?'':(ch===ch.toUpperCase()?'w':'b')+ch.toUpperCase()),t:'w',c:{K:0,Q:0,k:0,q:0},ep:-1,hm:0}),sqn=i=>'abcdefgh'[i&7]+(8-(i>>3)),isMate=s=>legal(s).length===0&&inCheck(s,s.t);
+function pzList(){$('p4').innerHTML='<div class="card"><h3>Mate puzzles</h3><p>White to move. Find checkmate in the number of moves shown. Begin with Mate in 1, then try Mate in 2. Tap Hint if you are stuck. Puzzles are for practice and are not scored.</p></div>'+PZL.map((p,i)=>`<div class="card wk" style="align-items:center"><div><div class="n">${p.k===1?'MATE IN 1':'MATE IN 2'}</div><h3>Puzzle ${(i%6)+1}</h3>${pzs[p.id]?'<p class="mute">✓ Solved</p>':''}</div><button class="btn" onclick="cPz(${i})">${pzs[p.id]?'Again':'Play'}</button></div>`).join('')}
+function startPz(i){const p=PZL[i];pz={i,p,st:0};S=dec(p.b);hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;cw='puzzle';cs=0;$('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';$('gt').textContent=p.k===1?'Mate in 1':'Mate in 2';[...$('game').querySelectorAll('.tools button')].forEach((b,j)=>b.textContent=['Reset','Hint','Restart'][j]);draw();$('st').textContent='White to move. Find mate in '+p.k+'.';scrollTo(0,0)}
+function pzMove(m){const n=apply(S,m),k=pz.p.k,msg=t=>{sel=-1;draw();$('st').textContent=t};
+if(pz.st===1||k===1){if(isMate(n)){S=n;last={f:m.f,t:m.t};sel=-1;pzs[pz.p.id]=1;try{localStorage.setItem('quanta-pz',JSON.stringify(pzs))}catch(e){}over=true;draw();$('st').innerHTML='Checkmate! Puzzle solved. <button class="btn" style="margin-left:8px" onclick="cPzNext()">Next</button>'}else msg('That is not checkmate. Try again.');return}
+if(m.f===pz.p.m[0]&&m.t===pz.p.m[1]){S=n;last={f:m.f,t:m.t};sel=-1;busy=true;draw();$('st').textContent='Good move. Black replies...';setTimeout(()=>{const r=legal(S)[0];S=apply(S,r);last={f:r.f,t:r.t};busy=false;pz.st=1;draw();$('st').textContent='Now deliver checkmate.'},700)}else msg('Not the right first move. Look for a forcing move.')}
+function pzHint(){if(over||busy)return;const f=(pz.p.k===2&&pz.st===0)?pz.p.m[0]:legal(S).find(m=>isMate(apply(S,m))).f;sel=f;draw();$('st').textContent='Hint: use the piece on '+sqn(f)+'.'}
+const G_=['','♔','♕','♖','♗','♘','♙'],SY={K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟'};
+let S,hist,cw,cs,cl,sel=-1,last=null,over,busy,undos,rn;
+function start(w,sc,lv){pz=null;[...$('game').querySelectorAll('.tools button')].forEach((b,j)=>b.textContent=['Undo','Resign','New Game'][j]);cw=w;cs=sc;cl=lv;S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;$('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';
+$('gt').textContent=(w==='practice'?'Practice':'Week '+w+(sc?'':' (practice)'))+' · '+LN[lv];draw();scrollTo(0,0)}
+function leave(){pz=null;setTimeout(()=>{if(!$('p4').classList.contains('hide'))pzList()},0);$('game').classList.add('hide');$('home').classList.remove('hide');if(!$('p2').classList.contains('hide'))weeks()}
+function closeWin(){$('win').style.display='none'}
+function draw(){const ms=sel>=0?legal(S).filter(m=>m.f===sel):[],tg=new Set(ms.map(m=>m.t)),ck=inCheck(S,S.t)?S.b.indexOf(S.t+'K'):-1;let h='';
+for(let i=0;i<64;i++){const r=i>>3,c=i&7,p=S.b[i];let k='q '+((r+c)%2?'d':'l');if(last&&(i===last.f||i===last.t))k+=' la';if(i===sel)k+=' sl';if(i===ck)k+=' ck';if(tg.has(i))k+=' tg'+(p||S.b[sel]&&S.b[sel][1]==='P'&&i===S.ep?' oc':'');
+h+=`<div class="${k}" onclick="cTap(${i})">${p?`<span class="pc ${p[0]}">${SY[p[1]]}\uFE0E</span>`:''}</div>`}
+$('bd').innerHTML=h;$('mv').textContent='Move '+rn;
+if(!over&&!pz)$('st').textContent=busy?'Computer is thinking…':(ck>=0?'Check! Your move':'Your move')}
+function tap(i){if(over||busy||S.t!=='w')return;const p=S.b[i];
+if(sel>=0){const m=legal(S).find(m=>m.f===sel&&m.t===i);if(m){if(pz){pzMove(m);return}hist.push({S,last,rn});S=apply(S,m);last={f:m.f,t:m.t};sel=-1;busy=true;draw();if(endCheck())return;setTimeout(reply,60);return}}
+sel=(p&&p[0]==='w')?i:-1;draw()}
+function reply(){const m=pick(S,cl);S=apply(S,m);last={f:m.f,t:m.t};rn++;busy=false;draw();endCheck()}
+function endCheck(){const ms=legal(S);let r=null;
+if(!ms.length)r=inCheck(S,S.t)?(S.t==='b'?'Win':'Loss'):'Draw';
+else if(S.hm>=100)r='Draw';else{const pcs=S.b.filter(x=>x&&x[1]!=='K');if(pcs.length===0||(pcs.length===1&&'BN'.includes(pcs[0][1])))r='Draw'}
+if(r){finish(r,r==='Win'?'Checkmate, you win!':r==='Loss'?'Checkmate, the computer wins':S.hm>=100?'Draw by the 50-move rule':!ms.length?'Stalemate, it is a draw':'Draw, not enough pieces');return true}return false}
+function undo(){if(pz){startPz(pz.i);return}if(over||busy||!hist.length)return;const h=hist.pop();S=h.S;last=h.last;rn=h.rn;sel=-1;undos++;draw()}
+function resign(){if(pz){pzHint();return}if(over||busy)return;if(cs&&!confirm('Resign this game? A resignation scores nothing.'))return;finish('Loss','You resigned')}
+function finish(r,txt){over=true;busy=false;draw();$('st').textContent=txt;const mv=rn;
+const lab=cw==='practice'?'Practice':'Week '+cw;$('wh').textContent=r==='Win'?'Victory!':r==='Draw'?'Draw':'Game over';
+$('wt').innerHTML=`${txt}<br><b>${lab}</b> · ${LN[cl]}<br>Moves <b>${mv}</b> · Undos <b>${undos}</b>`;
+$('nm').style.display=cs?'':'none';$('aid').style.display=cs?'':'none';$('wf').style.display='none';try{$('aid').value=localStorage.getItem('quanta-id')||''}catch(e){}
+if(cs){try{$('nm').value=localStorage.getItem('quanta-name')||''}catch(e){}const rank={Win:2,Draw:1,Loss:0},o=saved[cw];
+if(rank[r]>0&&(!o||rank[r]>rank[o.r]||(rank[r]===rank[o.r]&&mv<o.mv))){saved[cw]={r,mv};try{localStorage.setItem('quanta-chess',JSON.stringify(saved))}catch(e){}}
+$('wa').style.display='';ghBind($('wa'),$('wf'),()=>({name:$('nm').value,id:$('aid').value,game:'Chess',week:'Week '+cw,stats:{Level:LN[cl],Result:r,Moves:mv,Undos:undos}}))}
+else $('wa').style.display='none';
+setTimeout(()=>$('win').style.display='flex',600)}
+
+Object.assign(window,{cTab:tab,cStart:start,cLeave:leave,cUndo:undo,cResign:resign,cClose:closeWin,cTap:tap,cLv,cStartP,cRestart:()=>pz?startPz(pz.i):start(cw,cs,cl),cPz:startPz,cPzNext:()=>startPz((pz.i+1)%PZL.length)});})();</script><script>(function(){
+const g=function(i){return document.getElementById(i)},rd=function(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},wr=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};
+window.qGame=function(){return rd('quanta-game')};
+function strip(){const n=rd('quanta-game');g('mp').classList.toggle('hide',!n);g('mp-n').textContent=n;g('mp-i').textContent=n?'('+rd('quanta-id')+')':''}
+window.qLoginOpen=function(){g('lg-name').value=rd('quanta-name');g('lg-game').value=rd('quanta-game');g('lg-id').value=rd('quanta-id');g('lg-err').textContent='';g('lg-cancel').style.display=rd('quanta-member')?'':'none';g('login').style.display='flex'};
+window.qLoginClose=function(){g('login').style.display='none'};
+window.qLogin=function(){const nm=g('lg-name').value.trim().replace(/\s+/g,' '),gm=g('lg-game').value.trim(),id=g('lg-id').value.trim().toUpperCase();
+if(nm.length<3||nm.indexOf(' ')<0){g('lg-err').textContent='Please enter your full name (first and last).';return}
+if(gm.length<2){g('lg-err').textContent='Please choose a game name.';return}
+if(id.indexOf('QNT')!==0||id.length<4){g('lg-err').textContent='Your membership ID starts with QNT, for example QNT-1067.';return}
+wr('quanta-name',nm);wr('quanta-game',gm);wr('quanta-id',id);wr('quanta-member','1');strip();qLoginClose()};
+strip();if(!rd('quanta-member'))qLoginOpen();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+})();</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<nav id="bn" aria-label="Main"><button data-v="play" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Play</button><button data-v="weeks"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Weeks</button><button data-v="ranks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8M12 20V5M19 20v-5"/></svg>Ranks</button><button data-v="learn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/></svg>Learn</button></nav><script>(function(){
+const g=i=>document.getElementById(i),rd=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CL=[0,0,1,1,2,2,2,2,0,2],LV=['Easy','Medium','Hard'];
+let view='play',game='S',all=false,origin='play';
+const cur=()=>{let c=-1;WK.forEach((w,i)=>{if(Date.now()>=unlockAt(w[3]))c=i});return c};
+const days=t=>Math.max(1,Math.ceil((t-Date.now())/864e5));
+const cres=()=>{try{return JSON.parse(rd('quanta-chess')||'{}')}catch(e){return {}}};
+const SVG='<svg viewBox="0 0 34 34" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="30" height="30" rx="2"/><path d="M12 2v30M22 2v30M2 12h30M2 22h30"/></svg>';
+function tile(k,glyph,name,sub,label){return `<button class="tile" onclick="hubGo('${k}')"><span class="tg">${glyph}</span><b>${name}</b><small>${sub}</small><span class="go">${label}</span></button>`}
+function hub(){
+ const nm=rd('quanta-game'),c=cur(),open=c>=0,w=WK[c>=0?c:0],n=w[0],web=open&&n===9,live=open&&!web,nx=WK[c+1];
+ let head;
+ if(!open){const d=days(unlockAt(WK[0][3]));head=`<div class="big">${d}</div><p class="hl">${d===1?'day':'days'} until Week 1</p><p class="hs">${fmt(WK[0][3]).replace(/ \d{4}$/,'')}, 12 am WAT</p>`}
+ else if(web)head=`<div class="big sm">Week 9</div><p class="hl">Guest webinar</p><p class="hs">No puzzle this week. Join on Google Meet.</p>`;
+ else head=`<div class="big sm">Week ${n}</div><p class="hl">${LV[CL[c]]} puzzles are open</p><p class="hs">${nx?'Next puzzles unlock in '+days(unlockAt(nx[3]))+' days.':'This is the final week.'}</p>`;
+ const sd=live?saved[n]:null,cd=live?cres()[n]:null;
+ const ts=tile('S',SVG,'Sudoku',live?(sd?'Solved in '+T(sd.t):w[1]):'Practice puzzle',live?(sd?'Play again':'Play'):'Practice');
+ const tc=tile('C','\u265e\uFE0E','Chess',live?(cd?cd.r+(cd.mv?', '+cd.mv+' moves':''):LV[CL[c]]+' computer'):'Practice game',live?(cd?'Play again':'Play'):'Practice');
+ g('hub').innerHTML=`<h1 class="gr">${nm?'Welcome back, '+esc(nm):'Welcome to the Game House'}</h1><section class="hero">${head}<div class="tiles">${ts}${tc}</div></section>${live?`<p class="pr">Warm up first: <button onclick="hubGo('S',1)">Sudoku practice</button><button onclick="hubGo('C',1)">Chess practice</button></p>`:''}`}
+window.hubGo=(k,pr)=>{const c=cur(),live=!pr&&c>=0&&WK[c][0]!==9,n=c>=0?WK[c][0]:0;origin='play';
+ ['hub','gsw','cr'].forEach(i=>g(i).classList.add('hide'));document.body.dataset.v='game';game=k;gSw(k);
+ if(k==='S')live?play(n,1):play('practice');else live?cStart(n,1,CL[c]):cStartP()};
+function mark(){const p=g(game==='S'?'p2':'c-p2'),cs=[...p.children],c=cur(),a=Math.max(c,0);
+ cs.forEach((el,i)=>{el.classList.toggle('now',i===c);el.classList.toggle('lk',i>c);el.classList.toggle('more',!all&&i!==a&&i!==a+1)});
+ g('wtog').textContent=all?'Show fewer weeks':'Show all '+cs.length+' weeks'}
+function nav(v){view=v;origin=v;document.body.dataset.v=v;
+ document.querySelectorAll('#bn button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+ g('hub').classList.toggle('hide',v!=='play');g('gsw').classList.toggle('hide',v==='play');g('cr').classList.add('hide');
+ if(v==='play'){hub();['sud','chs'].forEach(i=>g(i).classList.add('hide'));scrollTo(0,0);return}
+ g('sw-S').classList.toggle('on',game==='S');g('sw-C').classList.toggle('on',game==='C');gSw(game);
+ if(game==='S')tab({weeks:2,ranks:3,learn:1}[v]);
+ else if(v==='ranks'){g('chs').classList.add('hide');g('cr').classList.remove('hide')}
+ else cTab(v==='weeks'?2:1);
+ if(v==='weeks')mark();scrollTo(0,0)}
+function setMe(){const nm=rd('quanta-game');g('me-n').textContent=nm||'Sign in';g('me-i').textContent=(nm[0]||'?').toUpperCase();if(view==='play')hub()}
+g('bn').onclick=e=>{const b=e.target.closest('button');if(b)nav(b.dataset.v)};
+g('sw-S').onclick=()=>{game='S';nav(view)};g('sw-C').onclick=()=>{game='C';nav(view)};
+g('wtog').onclick=()=>{all=!all;mark()};
+new MutationObserver(setMe).observe(g('mp-n'),{childList:true,characterData:true,subtree:true});
+['leave','cLeave'].forEach(f=>{const o=window[f];if(o)window[f]=function(){o.apply(this,arguments);if(origin==='play')nav('play')}});
+document.querySelectorAll('#p1>.card:has(h3),#c-p1>.card:has(h3)').forEach(c=>{const h=c.querySelector('h3'),d=document.createElement('details'),s=document.createElement('summary');d.className='acc';s.textContent=h.textContent;h.remove();d.append(s,...c.childNodes);c.replaceWith(d)});
+g('top').querySelector('img').src=document.querySelector('.brand img').src;
+setMe();nav('play');
+})();</script><script>(function(){
+const g=i=>document.getElementById(i),rd=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+// offline pill
+const off=()=>g('off').classList.toggle('hide',navigator.onLine!==false);
+addEventListener('online',off);addEventListener('offline',off);off();
+// install prompt
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let dp=null;
+function showInst(txt,btn){if(standalone||rd('quanta-inst-x'))return;g('inst-t').textContent=txt;g('inst-go').style.display=btn?'':'none';g('inst').classList.remove('hide')}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;showInst('Add it to your home screen for one-tap play, even offline.',true)});
+addEventListener('appinstalled',()=>g('inst').classList.add('hide'));
+g('inst-go').onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(e){}dp=null;g('inst').classList.add('hide')};
+g('inst-x').onclick=()=>{try{localStorage.setItem('quanta-inst-x','1')}catch(e){}g('inst').classList.add('hide')};
+if(ios&&!standalone)showInst('Tap the Share button, then "Add to Home Screen".',false);
+// login: Enter submits, first field focused
+['lg-name','lg-game','lg-id'].forEach(i=>g(i).addEventListener('keydown',e=>{if(e.key==='Enter')qLogin()}));
+const lo=window.qLoginOpen;window.qLoginOpen=function(){lo();setTimeout(()=>g('lg-name').focus(),50)};
+})();</script>
+</body></html>
