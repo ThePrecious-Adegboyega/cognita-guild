@@ -1,6 +1,6 @@
 /* Cognita Guild service worker.
    Bump VERSION whenever you change any file, so installed apps pick up the update. */
-const VERSION = 'v2';
+const VERSION = 'v4';
 const CACHE = 'cognita-' + VERSION;
 const SHELL = [
   './',
@@ -33,6 +33,12 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
+
+  // Leaderboard data: always try the network first so rankings are fresh.
+  if (url.pathname.endsWith('leaderboard.json')) {
+    e.respondWith(fetch(req).then(res => { if (res.ok) { const c = res.clone(); caches.open(CACHE).then(k => k.put('leaderboard.json', c)); } return res; }).catch(() => caches.match('leaderboard.json')));
+    return;
+  }
 
   // Pages: network first so updates arrive, fall back to the cached shell offline.
   if (req.mode === 'navigate') {
