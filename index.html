@@ -252,6 +252,22 @@ body:not([data-v=play]) #inst{display:none}
 .olc button{border-radius:8px;padding:12px 0;font-weight:700;font-size:15px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 .olc .olg{background:var(--btn);color:#fff;border-color:var(--btn)}
 </style>
+<style>
+.pl .ck{margin-left:auto;flex:none;font:700 19px ui-monospace,Menlo,Consolas,monospace;padding:5px 10px;border-radius:6px;background:var(--card);border:1px solid var(--line);min-width:78px;text-align:center;color:var(--ink)}
+.pl .ck:empty{display:none}
+.pl .ck.on{background:#22304d;color:#fff;border-color:#22304d}
+.pl .ck.low{background:#b3261e;color:#fff;border-color:#b3261e}
+#c-oltc{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#c-oltc button{padding:8px 0;font-size:15px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:1px}
+#c-oltc button small{font-size:11px;font-weight:600;opacity:.75}
+#c-ol input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--btn);flex:none}
+#c-ol .olk{display:flex;gap:10px;align-items:center;text-align:left;font-size:14px;margin-top:12px}
+#c-ol .lbr{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+#c-ol .lbr b{display:block;font-size:16px}#c-ol .lbr small{display:block;font-size:12px;color:var(--mute)}
+#c-ol .lbr .btn{padding:10px 18px;flex:none}
+#c-ol .mute{font-size:13px;margin:6px 0 0}
+#c-spd{grid-template-columns:repeat(3,1fr)}
+</style>
 </head><body><div id="login"><div class="lb"><img alt="Cognita Guild crest" src="crest.png"><h2>Member Sign-in</h2><p class="mute">Enter your details once. They are saved on this phone.</p>
 <label for="lg-name">Full name</label><input id="lg-name" autocomplete="name" placeholder="e.g. Ada Okafor">
 <label for="lg-game">Game name</label><input id="lg-game" autocomplete="nickname" maxlength="20" placeholder="The name shown on the leaderboard">
@@ -301,13 +317,17 @@ body:not([data-v=play]) #inst{display:none}
 <div class="card"><h3>First tips</h3><ol class="steps"><li>Before every move, ask: what is the computer threatening?</li><li>Control the centre with pawns, then bring out Knights and Bishops.</li><li>Castle early to protect your King.</li><li>Do not trade a bigger piece for a smaller one. Use the values above.</li><li>Start on Easy in practice. Use Undo freely while learning.</li></ol><button class="btn" onclick="cTab(1)">Back to Play</button></div></div></div></div>
 <div id="c-game" class="hide"><div class="bar"><button class="btn alt" onclick="cLeave()">← Back</button><span id="c-gt"></span><span class="rt"><span id="c-mv">Move 1</span><button class="snd" id="c-snd" onclick="cSnd()" type="button"></button></span></div>
 <div id="c-olbar" class="card hide"><span class="mute">Room code</span><b id="c-olcode"></b><div id="c-olshare" style="margin-top:8px;display:flex;gap:8px;justify-content:center"><button class="btn alt" id="c-olcp" onclick="cOlCopy()">Copy code</button><button class="btn" onclick="cOlWa()">Share on WhatsApp</button></div></div>
-<div class="pl"><i class="dt"></i><b id="c-opp"></b></div><div id="c-bd"></div><div class="pl"><i class="dt"></i><b id="c-me"></b></div><div id="c-st" aria-live="polite"></div><div id="c-oldr" class="card hide" style="text-align:center;padding:10px"><button class="btn" onclick="cOlDrawYes()">Accept draw</button> <button class="btn alt" onclick="cOlDrawNo()">Decline</button></div><div id="c-rv"></div><div class="tools"><button onclick="cUndo()">↶ Undo</button><button onclick="cResign()">Resign</button><button onclick="cRestart()">New Game</button></div></div>
+<div class="pl"><i class="dt"></i><b id="c-opp"></b><span class="ck" id="c-ock"></span></div><div id="c-bd"></div><div class="pl"><i class="dt"></i><b id="c-me"></b><span class="ck" id="c-mck"></span></div><div id="c-st" aria-live="polite"></div><div id="c-oldr" class="card hide" style="text-align:center;padding:10px"><button class="btn" onclick="cOlDrawYes()">Accept draw</button> <button class="btn alt" onclick="cOlDrawNo()">Decline</button></div><div id="c-rv"></div><div class="tools"><button onclick="cUndo()">↶ Undo</button><button onclick="cResign()">Resign</button><button onclick="cRestart()">New Game</button></div></div>
 <div id="c-ol" role="dialog" aria-modal="true" aria-labelledby="c-olh" onclick="if(event.target===this)cOlClose()"><div class="box"><div class="sh"><h2 id="c-olh">Play a friend</h2><button class="x" type="button" onclick="cOlClose()" aria-label="Close">✕</button></div>
 <h3>Your name</h3><input id="c-oln" maxlength="24" placeholder="Name your friend will see" autocomplete="off">
-<h3>Start a new game</h3><div class="seg" id="c-olside" role="group" aria-label="Your side"></div><button class="btn" type="button" style="width:100%;margin-top:12px" onclick="cOlCreate()">Create room</button>
-<h3>Or join a friend</h3><input id="c-olc" maxlength="6" placeholder="ROOM CODE" autocomplete="off" autocapitalize="characters"><button class="btn alt" type="button" style="width:100%" onclick="cOlJoin()">Join room</button>
+<h3>Time control</h3><div class="seg" id="c-oltc" role="group" aria-label="Time control"></div><p class="mute" id="c-oltd"></p>
+<h3>Your side</h3><div class="seg" id="c-olside" role="group" aria-label="Your side"></div>
+<label class="olk"><input type="checkbox" id="c-ollb" checked><span>List my room in the lobby so anyone can join me</span></label>
+<button class="btn" type="button" style="width:100%;margin-top:12px" onclick="cOlCreate()">Create room</button>
+<h3>Join with a code</h3><input id="c-olc" maxlength="6" placeholder="ROOM CODE" autocomplete="off" autocapitalize="characters"><button class="btn alt" type="button" style="width:100%" onclick="cOlJoin()">Join room</button>
+<h3>Players waiting for a game</h3><div id="c-oll"><p class="mute">Looking for players…</p></div>
 <p id="c-olerr" role="alert"></p></div></div>
-<div id="c-setup" role="dialog" aria-modal="true" aria-labelledby="c-sh" onclick="if(event.target===this)cSetupClose()"><div class="box"><div class="sh"><h2 id="c-sh">Game setup</h2><button class="x" type="button" onclick="cSetupClose()" aria-label="Close">✕</button></div><p class="mute" style="margin:2px 0 0">Practice game against the House computer. No clock, take all the time you need.</p><h3>Strength</h3><div class="seg" id="c-str" role="group" aria-label="Strength"></div><p class="mute" id="c-strd" style="min-height:20px;margin:8px 0 0"></p><h3>Side</h3><div class="seg" id="c-side" role="group" aria-label="Side"></div><button class="btn" type="button" style="width:100%;margin-top:18px" onclick="cSetupGo()">Play against computer</button></div></div>
+<div id="c-setup" role="dialog" aria-modal="true" aria-labelledby="c-sh" onclick="if(event.target===this)cSetupClose()"><div class="box"><div class="sh"><h2 id="c-sh">Game setup</h2><button class="x" type="button" onclick="cSetupClose()" aria-label="Close">✕</button></div><p class="mute" style="margin:2px 0 0">Practice game against the House computer. No clock, take all the time you need.</p><h3>Strength</h3><div class="seg" id="c-str" role="group" aria-label="Strength"></div><p class="mute" id="c-strd" style="min-height:20px;margin:8px 0 0"></p><h3>Side</h3><div class="seg" id="c-side" role="group" aria-label="Side"></div><h3>Computer speed</h3><div class="seg" id="c-spd" role="group" aria-label="Computer speed"></div><p class="mute" id="c-spdd" style="min-height:20px;margin:8px 0 0"></p><button class="btn" type="button" style="width:100%;margin-top:18px" onclick="cSetupGo()">Play against computer</button></div></div>
 <div id="c-win"><div class="box"><h2 id="c-wh" style="margin:0"></h2><p id="c-wt"></p><input id="c-nm" placeholder="Your full name" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><input id="c-aid" placeholder="Membership ID, e.g. QNT-1067" style="width:100%;padding:10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)"><button class="btn" id="c-wa" style="width:100%;margin-bottom:8px">Send Result on WhatsApp</button><button class="btn alt" id="c-wf" style="width:100%;margin-bottom:8px;display:none">Submit to Guild Form</button><button class="btn" id="c-olrm" style="width:100%;margin-bottom:8px;display:none" onclick="cOlRm()">Rematch</button><button class="btn alt" style="width:100%;margin-bottom:8px" onclick="cReview()">Review my game</button><button class="btn alt" style="width:100%" onclick="cClose()">Close</button></div></div></section><button id="wtog" class="btn alt">Show all weeks</button><footer class="ft"><span>NUNSA FUOYE</span><i>&#9670;</i><span>Cognita Guild</span><i>&#9670;</i><span>House of Quanta</span><br><button id="adb" type="button" style="background:none;border:0;color:var(--mute);font-size:12px;text-decoration:underline;cursor:pointer;padding:10px">Admin</button></footer></div>
 <script>
 const GH_FORM='',GH_ENTRY={name:'',id:'',game:'',week:'',result:'',code:''}; // Google Form prefill link and entry IDs go here
@@ -448,10 +468,12 @@ function perft(s,d){if(!d)return 1;let n=0;for(const m of legal(s))n+=perft(appl
 const WK=[[1,0,'Easy',[2026,9,24]],[2,0,'Easy',[2026,9,31]],[3,1,'Medium',[2026,10,7]],[4,1,'Medium',[2026,10,14]],[5,2,'Hard',[2026,10,21]],[6,2,'Hard',[2026,10,28]],[7,2,'Hard',[2026,11,5]],[8,2,'Hard',[2027,0,9]],[9,0,'Webinar',[2027,0,16]],[10,2,'Hard',[2027,0,23]]];
 const LN=['Easy','Medium','Hard'],unlockAt=d=>Date.UTC(d[0],d[1],d[2],-1),fmt=d=>new Date(Date.UTC(d[0],d[1],d[2])).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
 let saved={};try{saved=JSON.parse(localStorage.getItem('quanta-chess')||'{}')}catch(e){}
-const $=id=>document.getElementById('c-'+id);let cset={lv:2,side:'w'},setupCb=null;try{const x=JSON.parse(localStorage.getItem('quanta-cset')||'{}');if(x.lv>=0&&x.lv<9)cset.lv=x.lv|0;if(['w','r','b'].includes(x.side))cset.side=x.side}catch(e){}
+const $=id=>document.getElementById('c-'+id);let cset={lv:2,side:'w',spd:(()=>{try{const v=parseInt(localStorage.getItem('quanta-cspeed'),10);return v>=0&&v<=2?v:1}catch(e){return 1}})()},setupCb=null;try{const x=JSON.parse(localStorage.getItem('quanta-cset')||'{}');if(x.lv>=0&&x.lv<9)cset.lv=x.lv|0;if(['w','r','b'].includes(x.side))cset.side=x.side}catch(e){}
 function setupUI(){$('str').innerHTML=STR.map((x,i)=>`<button type="button" class="${i===cset.lv?'on':''}" aria-pressed="${i===cset.lv}" onclick="cSetLv(${i})">${i+1}</button>`).join('');$('strd').textContent='Level '+(cset.lv+1)+': '+STR[cset.lv].t;
 const SD=[['w','White','<span class="ic wK"></span>'],['r','Random side','<span class="ic"><span class="wK" style="clip-path:inset(0 50% 0 0)"></span><span class="bK" style="clip-path:inset(0 0 0 50%)"></span></span>'],['b','Black','<span class="ic bK"></span>']];
-$('side').innerHTML=SD.map(([k,n,ic])=>`<button type="button" class="${k===cset.side?'on':''}" aria-pressed="${k===cset.side}" onclick="cSetSide('${k}')">${ic}${n}</button>`).join('')}
+$('side').innerHTML=SD.map(([k,n,ic])=>`<button type="button" class="${k===cset.side?'on':''}" aria-pressed="${k===cset.side}" onclick="cSetSide('${k}')">${ic}${n}</button>`).join('');
+const SPD=[['Quick','The computer replies straight away.'],['Relaxed','The computer waits about 3 seconds before it moves.'],['Slow','The computer waits about 6 seconds before it moves.']];
+$('spd').innerHTML=SPD.map(([n],i)=>`<button type="button" class="${i===cset.spd?'on':''}" aria-pressed="${i===cset.spd}" onclick="cSetSpd(${i})">${n}</button>`).join('');$('spdd').textContent=SPD[cset.spd][1]}
 document.body.appendChild($('setup'));
 function setupOpen(cb){setupCb=typeof cb==='function'?cb:null;setupUI();$('setup').style.display='flex'}
 function setupClose(){$('setup').style.display='none';setupCb=null}
@@ -503,9 +525,9 @@ function toggleSnd(){AU.mute=!AU.mute;try{localStorage.setItem('quanta-mute',AU.
 function who(o){$('opp').textContent=o;let n='';try{n=localStorage.getItem('quanta-game')||''}catch(e){}$('me').textContent=n||'You'}
 sndUI();
 const G_=['','♔','♕','♖','♗','♘','♙'],SY={K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟'};
-let OL=null,ply=0,olSide='w',S,hist,cw,cs,cl,cl0=0,cn='',pc='w',flip=false,sel=-1,last=null,over,busy,undos,rn,reps={},mlog=[],RV=[],egi=0,QF=0;
+let OL=null,rtok=0,ply=0,olSide='w',S,hist,cw,cs,cl,cl0=0,cn='',pc='w',flip=false,sel=-1,last=null,over,busy,undos,rn,reps={},mlog=[],RV=[],egi=0,QF=0;
 function start(w,sc,lv,sd){olDetach();pz=null;reps={};mlog=[];$('rv').innerHTML='';[...$('game').querySelectorAll('.tools button')].forEach((b,j)=>b.textContent=['Undo','Resign','New Game'][j]);const wkp=w!=='practice';cl0=lv;cl=wkp?[2,4,6][lv]:lv;cn=wkp?LN[lv]:'Level '+(lv+1);pc=wkp?'w':(sd==='b'?'b':'w');flip=pc==='b';who('House computer \u00b7 '+cn);cw=w;cs=sc;S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;$('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';
-$('gt').textContent=(w==='practice'?'Practice':'Week '+w+(sc?'':' (practice)'))+' · '+cn;draw();scrollTo(0,0);if(pc==='b'){busy=true;draw();setTimeout(reply,500)}}
+$('gt').textContent=(w==='practice'?'Practice':'Week '+w+(sc?'':' (practice)'))+' · '+cn;draw();scrollTo(0,0);if(pc==='b'){busy=true;draw();sched(Math.max(500,cdelay()))}}
 function leave(){olDetach();pz=null;setTimeout(()=>{if(!$('p4').classList.contains('hide'))pzList()},0);$('game').classList.add('hide');$('home').classList.remove('hide');if(!$('p2').classList.contains('hide'))weeks()}
 function closeWin(){$('win').style.display='none'}
 function draw(){const ms=sel>=0?legal(S).filter(m=>m.f===sel):[],tg=new Set(ms.map(m=>m.t)),ck=inCheck(S,S.t)?S.b.indexOf(S.t+'K'):-1;let h='';
@@ -514,7 +536,7 @@ h+=`<div class="${k}" onclick="cTap(${i})">${(q&7)===7?`<i class="rk">${8-r}</i>
 $('bd').innerHTML=h;$('mv').textContent='Move '+rn;
 if(!over&&!pz)$('st').textContent=OL?olText(ck):busy?'Computer is thinking…':(ck>=0?'Check! Your move':'Your move')}
 function tap(i){if(over||busy||S.t!==pc||(OL&&!OL.ready))return;const p=S.b[i];
-if(sel>=0){const m=legal(S).find(m=>m.f===sel&&m.t===i);if(m){if(pz){pzMove(m);return}if(OL){olSend(m);return}hist.push({S,last,rn,reps:{...reps}});mlog.push({S,m,rn});snd(kind(S,m));S=apply(S,m);last={f:m.f,t:m.t};if(pc==='b')rn++;sel=-1;busy=true;draw();if(endCheck())return;setTimeout(reply,60);return}}
+if(sel>=0){const m=legal(S).find(m=>m.f===sel&&m.t===i);if(m){if(pz){pzMove(m);return}if(OL){olSend(m);return}hist.push({S,last,rn,reps:{...reps}});mlog.push({S,m,rn});snd(kind(S,m));S=apply(S,m);last={f:m.f,t:m.t};if(pc==='b')rn++;sel=-1;busy=true;draw();if(endCheck())return;sched(cdelay());return}}
 sel=(p&&p[0]===pc)?i:-1;draw()}
 function reply(){const m=pick(S,cl);snd(kind(S,m));S=apply(S,m);last={f:m.f,t:m.t};if(pc==='w')rn++;busy=false;draw();endCheck()}
 function endCheck(){const ms=legal(S);let r=null;const kk=S.b.join('|')+S.t+JSON.stringify(S.c)+S.ep;reps[kk]=(reps[kk]||0)+1;const rp=reps[kk]>=3;
@@ -544,6 +566,11 @@ const b=Array(64).fill('');EG[i][1].split(' ').forEach(t=>{b[(8-+t[3])*8+t.charC
 hist=[];reps={};mlog=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;$('rv').innerHTML='';$('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';$('gt').textContent='Endgame \u00b7 '+EG[i][0];draw();$('st').textContent='Checkmate the black king. Avoid stalemate!';scrollTo(0,0)}
 
 /* ===== Online play (Firebase Realtime Database): two phones, one room code ===== */
+const TCS=[['No clock','',0,0],['1 min','Bullet',60,0],['1 | 1','Bullet',60,1],['3 min','Blitz',180,0],['3 | 2','Blitz',180,2],['5 min','Blitz',300,0],['10 min','Rapid',600,0]];
+let olTcI=(()=>{try{const v=parseInt(localStorage.getItem('quanta-oltc'),10);return v>=0&&v<TCS.length?v:6}catch(e){return 6}})(),lbOff=[],lbData={},lbOffMs=0;
+const olTcName=(tb,ti)=>tb?(ti?tb/60+' | '+ti:tb/60+' min'):'No clock';
+function sched(d){const k=++rtok;setTimeout(()=>{if(k===rtok&&busy&&!over&&!pz&&!OL)reply()},d)}
+function cdelay(){if(/^\d+$/.test(String(cw)))return 60;return[60,2800,6000][cset.spd]+(cset.spd?(Math.random()*900|0):0)}
 const OLK='quanta-room',OLA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',olF=()=>window.QFB||null;
 const olEsc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const olClean=x=>String(x==null?'':x).replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,24);
@@ -551,16 +578,25 @@ const olSaved=()=>{try{return JSON.parse(localStorage.getItem(OLK)||'null')}catc
 const olName=()=>{try{return localStorage.getItem('quanta-olname')||localStorage.getItem('quanta-game')||localStorage.getItem('quanta-name')||''}catch(e){return''}};
 function olSideUI(){const SD=[['w','White','<span class="ic wK"></span>'],['r','Random','<span class="ic"><span class="wK" style="clip-path:inset(0 50% 0 0)"></span><span class="bK" style="clip-path:inset(0 0 0 50%)"></span></span>'],['b','Black','<span class="ic bK"></span>']];
 $('olside').innerHTML=SD.map(([k,n,ic])=>`<button type="button" class="${k===olSide?'on':''}" aria-pressed="${k===olSide}" onclick="cOlSide('${k}')">${ic}${n}</button>`).join('')}
-function olOpen(){actx();$('oln').value=olName();$('olc').value='';$('olerr').textContent='';olSideUI();$('ol').style.display='flex'}
-function olClose(){$('ol').style.display='none'}
+function olOpen(){actx();$('oln').value=olName();$('olc').value='';$('olerr').textContent='';olSideUI();olTcUI();olLbStart();$('ol').style.display='flex'}
+function olClose(){olLbStop();$('ol').style.display='none'}
+function olTcUI(){const tc=TCS[olTcI];$('oltc').innerHTML=TCS.map(([n,c],i)=>`<button type="button" class="${i===olTcI?'on':''}" aria-pressed="${i===olTcI}" onclick="cOlTc(${i})">${n}<small>${c||'Untimed'}</small></button>`).join('');
+$('oltd').textContent=tc[2]?'Like chess.com: the clock starts after each player has made their first move. Running out of time loses the game.'+(tc[3]?' Each move adds '+tc[3]+' second'+(tc[3]>1?'s':'')+'.':''):'No clock. Take as long as you like.'}
+function olLbStop(){lbOff.forEach(f=>{try{f()}catch(e){}});lbOff=[]}
+function olLbStart(){olLbStop();const F=olF(),el=$('oll');if(!F){el.innerHTML='<p class="mute">The lobby is not available right now.</p>';return}
+const a=F.onValue(F.ref(F.db,'.info/serverTimeOffset'),x=>{lbOffMs=Number(x.val())||0});
+const b=F.onValue(F.ref(F.db,'lobby'),x=>{lbData=x.val()||{};olLbRender()});lbOff=[a,b]}
+function olLbRender(){const el=$('oll'),now=Date.now()+lbOffMs,sv=olSaved();
+const rows=Object.keys(lbData).filter(k=>/^[A-Z0-9]{6}$/.test(k)&&lbData[k]&&lbData[k].name&&now-(Number(lbData[k].ts)||now)<1800000&&!(sv&&sv.code===k)).sort((x,y)=>(Number(lbData[y].ts)||0)-(Number(lbData[x].ts)||0)).slice(0,20);
+el.innerHTML=rows.length?rows.map(k=>{const d=lbData[k],you=d.side==='w'?'Black':'White';return`<div class="lbr"><div><b>${olEsc(olClean(d.name))}</b><small>You play ${you} \u00b7 ${olTcName(Number(d.tb)||0,Number(d.ti)||0)}</small></div><button class="btn" type="button" onclick="cOlJoinCode('${k}')">Join</button></div>`}).join(''):'<p class="mute">Nobody is waiting right now. Create a room and keep this page open, and others can find you here.</p>'}
 const olErr=t=>{$('olerr').textContent=t};
 function olNeed(){const F=olF();if(!F){olErr('Online play is still loading, or you are offline. Try again in a moment.');return null}
 const n=olClean($('oln').value);if(!n){olErr('Enter your name first.');return null}try{localStorage.setItem('quanta-olname',n)}catch(e){}return{F,n}}
 async function olCreate(){const c=olNeed();if(!c)return;const{F,n}=c;olErr('Creating room…');
-const side=olSide==='r'?(Math.random()<.5?'w':'b'):olSide;
+const side=olSide==='r'?(Math.random()<.5?'w':'b'):olSide,tc=TCS[olTcI],tb=tc[2],ti=tc[3],lb=$('ollb').checked?{name:n,side,tb,ti}:null;
 try{let code,t=0;for(;;){code=Array.from({length:6},()=>OLA[Math.random()*OLA.length|0]).join('');const sn=await F.get(F.ref(F.db,'rooms/'+code));if(!sn.exists())break;if(++t>5)throw 0}
-await F.set(F.ref(F.db,'rooms/'+code),{created:F.serverTimestamp(),hostSide:side,host:{name:n},status:'waiting'});
-olClose();olEnter(code,'host',n,side)}catch(e){olErr('Could not create the room. Check your connection and try again.')}}
+await F.set(F.ref(F.db,'rooms/'+code),{created:F.serverTimestamp(),hostSide:side,host:{name:n},status:'waiting',tb,ti});
+olClose();olEnter(code,'host',n,side,lb)}catch(e){olErr('Could not create the room. Check your connection and try again.')}}
 async function olJoin(){const c=olNeed();if(!c)return;const{F,n}=c;
 const code=$('olc').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6){olErr('Room codes have 6 characters.');return}
 olErr('Joining…');
@@ -568,7 +604,7 @@ try{const sn=await F.get(F.ref(F.db,'rooms/'+code));if(!sn.exists()){olErr('No r
 const v=sn.val();if(v.status==='over'){olErr('That game has already finished.');return}
 const r=await F.runTransaction(F.ref(F.db,'rooms/'+code+'/guest'),cur=>cur?undefined:{name:n});
 if(!r.committed){olErr('That room already has two players.');return}
-await F.set(F.ref(F.db,'rooms/'+code+'/status'),'playing');
+await F.set(F.ref(F.db,'rooms/'+code+'/status'),'playing');F.set(F.ref(F.db,'lobby/'+code),null).catch(()=>{});
 olClose();olEnter(code,'guest',n,v.hostSide==='w'?'b':'w')}catch(e){olErr('Could not join. Check your connection and try again.')}}
 async function olRe(){const s=olSaved();if(!s||!s.code)return;const F=olF();if(!F){alert('Online play is still loading, or you are offline. Try again in a moment.');return}
 try{const sn=await F.get(F.ref(F.db,'rooms/'+s.code)),v=sn.val();
@@ -581,27 +617,29 @@ if(b[1]){b[1].style.display='';b[1].style.gridColumn=''}
 if(b[2]){b[2].style.display=on?'none':'';b[2].disabled=false;b[2].textContent=on?'Rematch':'New Game'}
 const tl=$('game').querySelector('.tools');if(tl)tl.style.gridTemplateColumns=on?'repeat(2,1fr)':'';
 const rv=document.querySelector('#c-win button[onclick="cReview()"]');if(rv)rv.style.display=on?'none':'';
-$('olrm').style.display='none';$('oldr').classList.add('hide');$('olbar').classList.toggle('hide',!on)}
+$('olrm').style.display='none';$('oldr').classList.add('hide');$('olbar').classList.toggle('hide',!on);if(!on){$('mck').textContent='';$('ock').textContent='';$('mck').className='ck';$('ock').className='ck'}}
 const olLabel=()=>OL.name+(OL.side==='w'?' (White)':' (Black)');
-function olEnter(code,role,name,side){olDetach();OL={code,role,name,side,ready:false,opp:'',oppOn:true,synced:false,offered:-1,offs:[]};
+function olEnter(code,role,name,side,lb){olDetach();OL={code,role,name,side,lb:lb||null,tb:0,ti:0,ts:[],off:0,flagged:false,zero:null,ready:false,opp:'',oppOn:true,synced:false,offered:-1,offs:[]};
 try{localStorage.setItem(OLK,JSON.stringify({code,role,name}))}catch(e){}
 if(window.olShow)window.olShow();pz=null;reps={};mlog=[];$('rv').innerHTML='';S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;ply=0;cw='online';cs=0;cn='Online';pc=side;flip=side==='b';
 $('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';$('gt').textContent='Online game';
 olUI(true);$('olcode').textContent=code;$('olshare').style.display='flex';$('opp').textContent='Waiting for a friend…';$('me').textContent=olLabel();
 draw();scrollTo(0,0);olListen()}
-function olListen(){const F=olF(),o=OL,base='rooms/'+o.code,me=F.ref(F.db,base+'/presence/'+o.role);
-const u1=F.onValue(F.ref(F.db,'.info/connected'),s=>{if(s.val()===true){F.set(me,true).catch(()=>{});F.onDisconnect(me).set(false).catch(()=>{})}});
+function olListen(){const F=olF(),o=OL,base='rooms/'+o.code,me=F.ref(F.db,base+'/presence/'+o.role),lr=F.ref(F.db,'lobby/'+o.code);
+const u1=F.onValue(F.ref(F.db,'.info/connected'),x=>{if(x.val()===true){F.set(me,true).catch(()=>{});F.onDisconnect(me).set(false).catch(()=>{});if(o.lb&&!o.ready){F.set(lr,{name:o.lb.name,side:o.lb.side,tb:o.lb.tb,ti:o.lb.ti,ts:F.serverTimestamp()}).catch(()=>{});F.onDisconnect(lr).remove().catch(()=>{})}}});
 const u2=F.onValue(F.ref(F.db,base),sn=>{if(OL!==o)return;const v=sn.val();if(!v){over=true;$('st').textContent='This room no longer exists.';return}olSync(v)});
-o.offs=[u1,u2]}
+const u3=F.onValue(F.ref(F.db,'.info/serverTimeOffset'),x=>{o.off=Number(x.val())||0});
+o.tk=setInterval(olTick,100);o.offs=[u1,u2,u3]}
 function olReset(sd){pc=sd;flip=sd==='b';reps={};mlog=[];S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;ply=0;$('win').style.display='none';$('rv').innerHTML='';$('me').textContent=olLabel();olUI(true);$('olbar').classList.add('hide')}
 function olSync(v){const o=OL,host=o.role==='host',og=host?v.guest:v.host,pr=(v.presence||{})[host?'guest':'host'];
-o.ready=!!v.guest;o.opp=og?olClean(og.name)||'Friend':'';o.oppOn=pr!==false;o.v=v;
+o.ready=!!v.guest;o.opp=og?olClean(og.name)||'Friend':'';o.oppOn=pr!==false;o.v=v;o.tb=Number(v.tb)||0;o.ti=Number(v.ti)||0;$('gt').textContent='Online \u00b7 '+olTcName(o.tb,o.ti);
+if(o.lb&&o.ready){o.lb=null;olF().set(olF().ref(olF().db,'lobby/'+o.code),null).catch(()=>{})}
 $('opp').textContent=o.opp||'Waiting for a friend\u2026';$('olshare').style.display=o.ready?'none':'flex';
-const g=v.game||0;if(o.game===undefined)o.game=g;else if(o.game!==g){o.game=g;o.rmBusy=false;o.offered=-1;o.side=host?v.hostSide:(v.hostSide==='w'?'b':'w');olReset(o.side)}
+const g=v.game||0;if(o.game===undefined)o.game=g;else if(o.game!==g){o.game=g;o.rmBusy=false;o.offered=-1;o.flagged=false;o.zero=null;o.side=host?v.hostSide:(v.hostSide==='w'?'b':'w');olReset(o.side)}
 const mv=v.moves||{},q=!o.synced;
 while(mv[ply]&&!over){const d=mv[ply],m=legal(S).find(x=>x.f===d.f&&x.t===d.t);if(!m){$('st').textContent='Out of sync. Leave and rejoin the room.';return}olApply(m,q)}
-o.synced=true;
-if(v.result&&!over){const rs=v.result,by=rs.by;if(rs.type==='draw')olFinish('Draw','Draw by agreement',q);else olFinish(by===o.side?'Loss':'Win',by===o.side?'You resigned':(o.opp||'Your opponent')+' resigned',q)}
+o.synced=true;o.ts=[];for(let i=0;i<ply;i++)o.ts[i]=mv[i]&&Number(mv[i].ts)||0;
+if(v.result&&!over){const rs=v.result,by=rs.by;if(rs.type==='draw')olFinish('Draw','Draw by agreement',q);else if(rs.type==='timeout')olTimeoutEnd(by,q);else olFinish(by===o.side?'Loss':'Win',by===o.side?'You resigned':(o.opp||'Your opponent')+' resigned',q)}
 const dr=v.draw,lv=!!(dr&&dr.ply===ply&&!over);o.dr=dr||null;o.drawIn=lv&&!dr.declined&&dr.by!==o.side;o.drawOut=lv&&!dr.declined&&dr.by===o.side;o.dnote=lv&&!!dr.declined&&dr.by===o.side;
 $('oldr').classList.toggle('hide',!o.drawIn);
 if(host&&over&&!o.rmBusy&&v.rematch&&v.rematch.host&&v.rematch.guest){const F=olF();o.rmBusy=true;
@@ -619,7 +657,7 @@ function olDrawNo(){const F=olF(),o=OL;if(!F||!o||over||!o.drawIn||!o.dr)return;
 function olRematch(){const F=olF(),o=OL;if(!F||!o||!over)return;F.set(F.ref(F.db,'rooms/'+o.code+'/rematch/'+o.role),true).catch(()=>{})}
 function olApply(m,q){if(!q)snd(kind(S,m));S=apply(S,m);last={f:m.f,t:m.t};ply++;if(S.t==='w')rn++;sel=-1;olEnd(q)}
 function olSend(m){const F=olF(),o=OL;if(!F||!o)return;const k=ply;olApply(m,false);draw();
-F.set(F.ref(F.db,'rooms/'+o.code+'/moves/'+k),{f:m.f,t:m.t}).catch(()=>{$('st').textContent='Your move could not be sent. Check your connection.'})}
+F.set(F.ref(F.db,'rooms/'+o.code+'/moves/'+k),{f:m.f,t:m.t,ts:F.serverTimestamp()}).catch(()=>{$('st').textContent='Your move could not be sent. Check your connection.'})}
 function olEnd(q){if(over)return;const ms=legal(S),kk=S.b.join('|')+S.t+JSON.stringify(S.c)+S.ep;reps[kk]=(reps[kk]||0)+1;let r=null,t='';const op=OL.opp||'Your opponent';
 if(!ms.length){if(inCheck(S,S.t)){r=S.t===pc?'Loss':'Win';t=r==='Win'?'Checkmate, you win!':'Checkmate, '+op+' wins'}else{r='Draw';t='Stalemate, it is a draw'}}
 else if(reps[kk]>=3){r='Draw';t='Draw by repetition'}else if(S.hm>=100){r='Draw';t='Draw by the 50-move rule'}
@@ -633,15 +671,27 @@ $('nm').style.display='none';$('aid').style.display='none';$('wa').style.display
 try{localStorage.removeItem(OLK)}catch(e){}
 if(F&&o.ready)F.set(F.ref(F.db,'rooms/'+o.code+'/status'),'over').catch(()=>{});
 olBtns();setTimeout(()=>{if(OL===o&&over)$('win').style.display='flex'},600)}
+const olFmt=ms=>{ms=Math.max(0,ms);if(ms<10000)return'0:0'+Math.floor(ms/1000)+'.'+Math.floor(ms%1000/100);const x=Math.floor(ms/1000);return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')};
+function olRem(){const o=OL;if(!o||!o.tb)return null;const r={w:o.tb*1e3,b:o.tb*1e3},t=o.ts||[];
+for(let i=2;i<ply&&i<t.length;i++){if(!t[i]||!t[i-1])continue;r[i%2?'b':'w']+=o.ti*1e3-(t[i]-t[i-1])}
+if(ply>=2&&!over&&o.ready&&t[ply-1])r[S.t]-=Date.now()+(o.off||0)-t[ply-1];
+if(o.zero)r[o.zero]=0;return r}
+function olTick(){const o=OL;if(!o||!o.tb)return;const r=olRem();if(!r)return;const oc=pc==='w'?'b':'w',run=!over&&ply>=2&&o.ready;
+[[$('mck'),pc],[$('ock'),oc]].forEach(([e,c])=>{e.textContent=olFmt(r[c]);e.className='ck'+(run&&S.t===c?' on':'')+(ply>=2&&r[c]<10000?' low':'')});
+if(run&&r[S.t]<=0&&!o.flagged){o.flagged=true;olTimeout(S.t)}}
+function olTimeout(loser){const F=olF(),o=OL;if(!F||!o||over)return;F.set(F.ref(F.db,'rooms/'+o.code+'/result'),{type:'timeout',by:loser}).catch(()=>{});olTimeoutEnd(loser,false)}
+function olTimeoutEnd(loser,q){const o=OL;if(!o||over)return;const win=loser==='w'?'b':'w',pcs=S.b.filter(x=>x&&x[0]===win&&x[1]!=='K'),ins=pcs.length===0||(pcs.length===1&&'BN'.includes(pcs[0][1]));o.zero=loser;
+if(ins)olFinish('Draw','Out of time, but '+(win===pc?'you cannot':'they cannot')+' checkmate. Draw',q);
+else{const mine=loser===pc;olFinish(mine?'Loss':'Win',mine?'You ran out of time':(o.opp||'Your opponent')+' ran out of time',q)}}
 function olText(ck){const o=OL;if(!o.ready)return'Waiting for a friend to join\u2026';if(o.drawIn)return(o.opp||'Your friend')+' offers a draw';const n=o.dnote?'Draw declined. ':o.drawOut?'Draw offer sent. ':'';if(S.t===pc)return n+(ck>=0?'Check! Your move':'Your move');return n+(o.oppOn?'Waiting for '+(o.opp||'your friend')+'\u2026':(o.opp||'Your friend')+' went offline. Waiting\u2026')}
 function olResign(){const F=olF(),o=OL;if(!F||!o||over||!o.ready)return;if(!confirm('Resign this game?'))return;F.set(F.ref(F.db,'rooms/'+o.code+'/result'),{type:'resign',by:o.side}).catch(()=>{})}
-function olDetach(){const o=OL;if(o){(o.offs||[]).forEach(f=>{try{f()}catch(e){}});const F=olF();if(F&&!over){try{F.set(F.ref(F.db,'rooms/'+o.code+'/presence/'+o.role),false).catch(()=>{})}catch(e){}}}OL=null;olUI(false);olCard()}
+function olDetach(){rtok++;const o=OL;if(o){clearInterval(o.tk);(o.offs||[]).forEach(f=>{try{f()}catch(e){}});const F=olF();if(F){try{if(o.lb)F.set(F.ref(F.db,'lobby/'+o.code),null).catch(()=>{});if(!over)F.set(F.ref(F.db,'rooms/'+o.code+'/presence/'+o.role),false).catch(()=>{})}catch(e){}}}OL=null;olUI(false);olCard()}
 function olCopy(){const c=OL&&OL.code;if(!c)return;const b=$('olcp'),done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy code',1500)};
 try{navigator.clipboard.writeText(c).then(done,()=>{})}catch(e){}}
 function olWa(){const c=OL&&OL.code;if(!c)return;const u=location.origin+location.pathname;window.open('https://wa.me/?text='+encodeURIComponent('Join my chess game on the Cognita Guild Game House.\nRoom code: '+c+'\n'+u),'_blank')}
 document.body.appendChild($('ol'));olCard();
 
-Object.assign(window,{cOlOpen:olOpen,cOlClose:olClose,cOlSide:k=>{olSide=k;olSideUI()},cOlCreate:olCreate,cOlJoin:olJoin,cOlRe:olRe,cOlCopy:olCopy,cOlRm:olRematch,cOlDrawYes:olDrawYes,cOlDrawNo:olDrawNo,cOlWa:olWa,cEg:startEG,cReview:review,cRv:rvGo,cTab:tab,cStart:start,cLeave:leave,cUndo:undo,cResign:resign,cClose:closeWin,cTap:tap,cStartP,cSndp:snd,cSnd:toggleSnd,cSetupOpen:setupOpen,cSetupClose:setupClose,cSetupGo:setupGo,cSetLv:i=>{cset.lv=i;setupUI()},cSetSide:k=>{cset.side=k;setupUI()},cRestart:()=>OL?olRematch():pz?startPz(pz.i):(cw==='practice'?setupOpen():cw==='endgame'?startEG(egi):start(cw,cs,cl0)),cPz:startPz,cPzNext:()=>startPz((pz.i+1)%PZL.length)});})();</script><script>(function(){
+Object.assign(window,{cOlOpen:olOpen,cOlClose:olClose,cOlSide:k=>{olSide=k;olSideUI()},cOlCreate:olCreate,cOlJoin:olJoin,cOlRe:olRe,cOlCopy:olCopy,cOlTc:i=>{olTcI=i;try{localStorage.setItem('quanta-oltc',i)}catch(e){}olTcUI()},cOlJoinCode:c=>{$('olc').value=c;olJoin()},cOlRm:olRematch,cOlDrawYes:olDrawYes,cOlDrawNo:olDrawNo,cOlWa:olWa,cEg:startEG,cReview:review,cRv:rvGo,cTab:tab,cStart:start,cLeave:leave,cUndo:undo,cResign:resign,cClose:closeWin,cTap:tap,cStartP,cSndp:snd,cSnd:toggleSnd,cSetupOpen:setupOpen,cSetupClose:setupClose,cSetupGo:setupGo,cSetLv:i=>{cset.lv=i;setupUI()},cSetSide:k=>{cset.side=k;setupUI()},cSetSpd:i=>{cset.spd=i;try{localStorage.setItem('quanta-cspeed',i)}catch(e){}setupUI()},cRestart:()=>OL?olRematch():pz?startPz(pz.i):(cw==='practice'?setupOpen():cw==='endgame'?startEG(egi):start(cw,cs,cl0)),cPz:startPz,cPzNext:()=>startPz((pz.i+1)%PZL.length)});})();</script><script>(function(){
 const g=function(i){return document.getElementById(i)},rd=function(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},wr=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};
 window.qGame=function(){return rd('quanta-game')};
 function strip(){const n=rd('quanta-game');g('mp').classList.toggle('hide',!n);g('mp-n').textContent=n;g('mp-i').textContent=n?'('+rd('quanta-id')+')':''}

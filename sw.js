@@ -1,6 +1,6 @@
 /* Cognita Guild service worker.
    Bump VERSION whenever you change any file, so installed apps pick up the update. */
-const VERSION = 'v5';
+const VERSION = 'v7';
 const CACHE = 'cognita-' + VERSION;
 const SHELL = [
   './',
