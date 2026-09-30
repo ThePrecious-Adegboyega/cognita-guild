@@ -245,6 +245,13 @@ body:not([data-v=play]) #inst{display:none}
 #c-olbar{text-align:center;margin-bottom:8px;padding:10px}
 #c-olcode{font-size:24px;letter-spacing:.2em;color:var(--goldd);margin-left:6px}
 </style>
+<style>
+.olc{margin:14px 0 0;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:12px;padding:14px 16px}
+.olc b{display:block;font:700 18px var(--serif)}.olc small{display:block;font-size:13px;color:var(--mute);line-height:1.35;margin-top:2px}
+.olc .olb{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.olc button{border-radius:8px;padding:12px 0;font-weight:700;font-size:15px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.olc .olg{background:var(--btn);color:#fff;border-color:var(--btn)}
+</style>
 </head><body><div id="login"><div class="lb"><img alt="Cognita Guild crest" src="crest.png"><h2>Member Sign-in</h2><p class="mute">Enter your details once. They are saved on this phone.</p>
 <label for="lg-name">Full name</label><input id="lg-name" autocomplete="name" placeholder="e.g. Ada Okafor">
 <label for="lg-game">Game name</label><input id="lg-game" autocomplete="nickname" maxlength="20" placeholder="The name shown on the leaderboard">
@@ -578,7 +585,7 @@ $('olrm').style.display='none';$('oldr').classList.add('hide');$('olbar').classL
 const olLabel=()=>OL.name+(OL.side==='w'?' (White)':' (Black)');
 function olEnter(code,role,name,side){olDetach();OL={code,role,name,side,ready:false,opp:'',oppOn:true,synced:false,offered:-1,offs:[]};
 try{localStorage.setItem(OLK,JSON.stringify({code,role,name}))}catch(e){}
-pz=null;reps={};mlog=[];$('rv').innerHTML='';S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;ply=0;cw='online';cs=0;cn='Online';pc=side;flip=side==='b';
+if(window.olShow)window.olShow();pz=null;reps={};mlog=[];$('rv').innerHTML='';S=init();hist=[];sel=-1;last=null;over=false;busy=false;undos=0;rn=1;ply=0;cw='online';cs=0;cn='Online';pc=side;flip=side==='b';
 $('home').classList.add('hide');$('game').classList.remove('hide');$('win').style.display='none';$('gt').textContent='Online game';
 olUI(true);$('olcode').textContent=code;$('olshare').style.display='flex';$('opp').textContent='Waiting for a friend…';$('me').textContent=olLabel();
 draw();scrollTo(0,0);olListen()}
@@ -632,7 +639,7 @@ function olDetach(){const o=OL;if(o){(o.offs||[]).forEach(f=>{try{f()}catch(e){}
 function olCopy(){const c=OL&&OL.code;if(!c)return;const b=$('olcp'),done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy code',1500)};
 try{navigator.clipboard.writeText(c).then(done,()=>{})}catch(e){}}
 function olWa(){const c=OL&&OL.code;if(!c)return;const u=location.origin+location.pathname;window.open('https://wa.me/?text='+encodeURIComponent('Join my chess game on the Cognita Guild Game House.\nRoom code: '+c+'\n'+u),'_blank')}
-olCard();
+document.body.appendChild($('ol'));olCard();
 
 Object.assign(window,{cOlOpen:olOpen,cOlClose:olClose,cOlSide:k=>{olSide=k;olSideUI()},cOlCreate:olCreate,cOlJoin:olJoin,cOlRe:olRe,cOlCopy:olCopy,cOlRm:olRematch,cOlDrawYes:olDrawYes,cOlDrawNo:olDrawNo,cOlWa:olWa,cEg:startEG,cReview:review,cRv:rvGo,cTab:tab,cStart:start,cLeave:leave,cUndo:undo,cResign:resign,cClose:closeWin,cTap:tap,cStartP,cSndp:snd,cSnd:toggleSnd,cSetupOpen:setupOpen,cSetupClose:setupClose,cSetupGo:setupGo,cSetLv:i=>{cset.lv=i;setupUI()},cSetSide:k=>{cset.side=k;setupUI()},cRestart:()=>OL?olRematch():pz?startPz(pz.i):(cw==='practice'?setupOpen():cw==='endgame'?startEG(egi):start(cw,cs,cl0)),cPz:startPz,cPzNext:()=>startPz((pz.i+1)%PZL.length)});})();</script><script>(function(){
 const g=function(i){return document.getElementById(i)},rd=function(k){try{return localStorage.getItem(k)||''}catch(e){return ''}},wr=function(k,v){try{localStorage.setItem(k,v)}catch(e){}};
@@ -659,6 +666,8 @@ const days=t=>Math.max(1,Math.ceil((t-Date.now())/864e5));
 const cres=()=>{try{return JSON.parse(rd('quanta-chess')||'{}')}catch(e){return {}}};
 const SVG='<svg viewBox="0 0 34 34" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="30" height="30" rx="2"/><path d="M12 2v30M22 2v30M2 12h30M2 22h30"/></svg>';
 function tile(k,glyph,name,sub,label){return `<button class="tile" onclick="hubGo('${k}')"><span class="tg">${glyph}</span><b>${name}</b><small>${sub}</small><span class="go">${label}</span></button>`}
+function olCardHtml(){let sv=null;try{sv=JSON.parse(rd('quanta-room')||'null')}catch(e){}
+ return `<section class="olc"><div><b>Play a friend online</b><small>Chess on two phones. Make a room and share the code.</small></div><div class="olb"><button class="olg" onclick="hubOnline()">Create or join a room</button>${sv&&sv.code?`<button class="olr" onclick="hubRe()">Rejoin room ${esc(String(sv.code))}</button>`:''}</div></section>`}
 function hub(){
  const nm=rd('quanta-game'),c=cur(),open=c>=0,w=WK[c>=0?c:0],n=w[0],web=open&&n===9,live=open&&!web,nx=WK[c+1];
  let head;
@@ -668,7 +677,9 @@ function hub(){
  const sd=live?saved[n]:null,cd=live?cres()[n]:null;
  const ts=tile('S',SVG,'Sudoku',live?(sd?'Solved in '+T(sd.t):w[1]):'Practice puzzle',live?(sd?'Play again':'Play'):'Practice');
  const tc=tile('C','\u265e\uFE0E','Chess',live?(cd?cd.r+(cd.mv?', '+cd.mv+' moves':''):LV[CL[c]]+' computer'):'Practice game',live?(cd?'Play again':'Play'):'Practice');
- g('hub').innerHTML=`<h1 class="gr">${nm?'Welcome back, '+esc(nm):'Welcome to the Game House'}</h1><section class="hero">${head}<div class="tiles">${ts}${tc}</div></section>${live?`<p class="pr">Warm up first: <button onclick="hubGo('S',1)">Sudoku practice</button><button onclick="hubGo('C',1)">Chess practice</button></p>`:''}`}
+ g('hub').innerHTML=`<h1 class="gr">${nm?'Welcome back, '+esc(nm):'Welcome to the Game House'}</h1><section class="hero">${head}<div class="tiles">${ts}${tc}</div></section>${olCardHtml()}${live?`<p class="pr">Warm up first: <button onclick="hubGo('S',1)">Sudoku practice</button><button onclick="hubGo('C',1)">Chess practice</button></p>`:''}`}
+window.olShow=()=>{origin='play';['hub','gsw','cr'].forEach(i=>g(i).classList.add('hide'));document.body.dataset.v='game';game='C';gSw('C')};
+window.hubOnline=()=>{origin='play';cOlOpen()};window.hubRe=()=>{origin='play';cOlRe()};
 window.hubGo=(k,pr)=>{const c=cur(),live=!pr&&c>=0&&WK[c][0]!==9,n=c>=0?WK[c][0]:0;origin='play';
  if(k==='C'&&!live){cSetupOpen(()=>{['hub','gsw','cr'].forEach(i=>g(i).classList.add('hide'));document.body.dataset.v='game';game='C';gSw('C')});return}
  ['hub','gsw','cr'].forEach(i=>g(i).classList.add('hide'));document.body.dataset.v='game';game=k;gSw(k);
